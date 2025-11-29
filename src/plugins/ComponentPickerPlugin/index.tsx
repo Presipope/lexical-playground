@@ -14,7 +14,6 @@ import {
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
 } from '@lexical/list';
-import {INSERT_EMBED_COMMAND} from '@lexical/react/LexicalAutoEmbedPlugin';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {INSERT_HORIZONTAL_RULE_COMMAND} from '@lexical/react/LexicalHorizontalRuleNode';
 import {
@@ -37,16 +36,10 @@ import {useCallback, useMemo, useState} from 'react';
 import * as ReactDOM from 'react-dom';
 
 import useModal from '../../hooks/useModal';
-import catTypingGif from '../../images/cat-typing.gif';
-import {EmbedConfigs} from '../AutoEmbedPlugin';
 import {INSERT_COLLAPSIBLE_COMMAND} from '../CollapsiblePlugin';
-import {INSERT_DATETIME_COMMAND} from '../DateTimePlugin';
 import {InsertEquationDialog} from '../EquationsPlugin';
-import {INSERT_EXCALIDRAW_COMMAND} from '../ExcalidrawPlugin';
-import {INSERT_IMAGE_COMMAND, InsertImageDialog} from '../ImagesPlugin';
 import InsertLayoutDialog from '../LayoutPlugin/InsertLayoutDialog';
 import {INSERT_PAGE_BREAK} from '../PageBreakPlugin';
-import {InsertPollDialog} from '../PollPlugin';
 import {InsertTableDialog} from '../TablePlugin';
 
 class ComponentPickerOption extends MenuOption {
@@ -241,90 +234,12 @@ function getBaseOptions(editor: LexicalEditor, showModal: ShowModal) {
       keywords: ['page break', 'divider'],
       onSelect: () => editor.dispatchCommand(INSERT_PAGE_BREAK, undefined),
     }),
-    new ComponentPickerOption('Excalidraw', {
-      icon: <i className="icon diagram-2" />,
-      keywords: ['excalidraw', 'diagram', 'drawing'],
-      onSelect: () =>
-        editor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined),
-    }),
-    new ComponentPickerOption('Poll', {
-      icon: <i className="icon poll" />,
-      keywords: ['poll', 'vote'],
-      onSelect: () =>
-        showModal('Insert Poll', (onClose) => (
-          <InsertPollDialog activeEditor={editor} onClose={onClose} />
-        )),
-    }),
-    ...EmbedConfigs.map(
-      (embedConfig) =>
-        new ComponentPickerOption(`Embed ${embedConfig.contentName}`, {
-          icon: embedConfig.icon,
-          keywords: [...embedConfig.keywords, 'embed'],
-          onSelect: () =>
-            editor.dispatchCommand(INSERT_EMBED_COMMAND, embedConfig.type),
-        }),
-    ),
-    new ComponentPickerOption('Date', {
-      icon: <i className="icon calendar" />,
-      keywords: ['date', 'calendar', 'time'],
-      onSelect: () => {
-        const dateTime = new Date();
-        dateTime.setHours(0, 0, 0, 0); // Set time to midnight
-        editor.dispatchCommand(INSERT_DATETIME_COMMAND, {dateTime});
-      },
-    }),
-    new ComponentPickerOption('Today', {
-      icon: <i className="icon calendar" />,
-      keywords: ['date', 'calendar', 'time', 'today'],
-      onSelect: () => {
-        const dateTime = new Date();
-        dateTime.setHours(0, 0, 0, 0); // Set time to midnight
-        editor.dispatchCommand(INSERT_DATETIME_COMMAND, {dateTime});
-      },
-    }),
-    new ComponentPickerOption('Tomorrow', {
-      icon: <i className="icon calendar" />,
-      keywords: ['date', 'calendar', 'time', 'tomorrow'],
-      onSelect: () => {
-        const dateTime = new Date();
-        dateTime.setDate(dateTime.getDate() + 1);
-        dateTime.setHours(0, 0, 0, 0); // Set time to midnight
-        editor.dispatchCommand(INSERT_DATETIME_COMMAND, {dateTime});
-      },
-    }),
-    new ComponentPickerOption('Yesterday', {
-      icon: <i className="icon calendar" />,
-      keywords: ['date', 'calendar', 'time', 'yesterday'],
-      onSelect: () => {
-        const dateTime = new Date();
-        dateTime.setDate(dateTime.getDate() - 1);
-        dateTime.setHours(0, 0, 0, 0); // Set time to midnight
-        editor.dispatchCommand(INSERT_DATETIME_COMMAND, {dateTime});
-      },
-    }),
     new ComponentPickerOption('Equation', {
       icon: <i className="icon equation" />,
       keywords: ['equation', 'latex', 'math'],
       onSelect: () =>
         showModal('Insert Equation', (onClose) => (
           <InsertEquationDialog activeEditor={editor} onClose={onClose} />
-        )),
-    }),
-    new ComponentPickerOption('GIF', {
-      icon: <i className="icon gif" />,
-      keywords: ['gif', 'animate', 'image', 'file'],
-      onSelect: () =>
-        editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-          altText: 'Cat typing on a laptop',
-          src: catTypingGif,
-        }),
-    }),
-    new ComponentPickerOption('Image', {
-      icon: <i className="icon image" />,
-      keywords: ['image', 'photo', 'picture', 'file'],
-      onSelect: () =>
-        showModal('Insert Image', (onClose) => (
-          <InsertImageDialog activeEditor={editor} onClose={onClose} />
         )),
     }),
     new ComponentPickerOption('Collapsible', {

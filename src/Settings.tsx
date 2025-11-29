@@ -9,19 +9,17 @@
 import type {JSX} from 'react';
 
 import {CAN_USE_BEFORE_INPUT} from '@lexical/utils';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 
 import {INITIAL_SETTINGS, isDevPlayground} from './appSettings';
 import {useSettings} from './context/SettingsContext';
 import Switch from './ui/Switch';
 
 export default function Settings(): JSX.Element {
-  const windowLocation = window.location;
   const {
     setOption,
     settings: {
       measureTypingPerf,
-      isCollab,
       isRichText,
       hasNestedTables,
       isMaxLength,
@@ -31,12 +29,10 @@ export default function Settings(): JSX.Element {
       isAutocomplete,
       showTreeView,
       showNestedEditorTreeView,
-      // disableBeforeInput,
       showTableOfContents,
       shouldUseLexicalContextMenu,
       shouldPreserveNewLinesInMarkdown,
       shouldAllowHighlightingWithBrackets,
-      // tableHorizontalScroll,
       selectionAlwaysOnDisplay,
       isCodeHighlighted,
       isCodeShiki,
@@ -50,13 +46,6 @@ export default function Settings(): JSX.Element {
     }
   }, []);
   const [showSettings, setShowSettings] = useState(false);
-  const [isSplitScreen, search] = useMemo(() => {
-    const parentWindow = window.parent;
-    const _search = windowLocation.search;
-    const _isSplitScreen =
-      parentWindow && parentWindow.location.pathname === '/split/';
-    return [_isSplitScreen, _search];
-  }, [windowLocation]);
 
   return (
     <>
@@ -68,29 +57,6 @@ export default function Settings(): JSX.Element {
       />
       {showSettings ? (
         <div className="switches">
-          {isRichText && isDevPlayground && (
-            <Switch
-              onClick={() => {
-                setOption('isCollab', !isCollab);
-                window.location.reload();
-              }}
-              checked={isCollab}
-              text="Collaboration"
-            />
-          )}
-          {isDevPlayground && (
-            <Switch
-              onClick={() => {
-                if (isSplitScreen) {
-                  window.parent.location.href = `/${search}`;
-                } else {
-                  window.location.href = `/split/${search}`;
-                }
-              }}
-              checked={isSplitScreen}
-              text="Split Screen"
-            />
-          )}
           <Switch
             onClick={() => setOption('measureTypingPerf', !measureTypingPerf)}
             checked={measureTypingPerf}
@@ -111,7 +77,6 @@ export default function Settings(): JSX.Element {
           <Switch
             onClick={() => {
               setOption('isRichText', !isRichText);
-              setOption('isCollab', false);
             }}
             checked={isRichText}
             text="Rich Text"
@@ -148,14 +113,6 @@ export default function Settings(): JSX.Element {
             checked={isAutocomplete}
             text="Autocomplete"
           />
-          {/* <Switch
-            onClick={() => {
-              setOption('disableBeforeInput', !disableBeforeInput);
-              setTimeout(() => window.location.reload(), 500);
-            }}
-            checked={disableBeforeInput}
-            text="Legacy Events"
-          /> */}
           <Switch
             onClick={() => {
               setOption('showTableOfContents', !showTableOfContents);
@@ -183,13 +140,6 @@ export default function Settings(): JSX.Element {
             checked={shouldPreserveNewLinesInMarkdown}
             text="Preserve newlines in Markdown"
           />
-          {/* <Switch
-            onClick={() => {
-              setOption('tableHorizontalScroll', !tableHorizontalScroll);
-            }}
-            checked={tableHorizontalScroll}
-            text="Tables have horizontal scroll"
-          /> */}
           <Switch
             onClick={() => {
               setOption(
@@ -200,7 +150,6 @@ export default function Settings(): JSX.Element {
             checked={shouldAllowHighlightingWithBrackets}
             text="Use Brackets for Highlighting"
           />
-
           <Switch
             onClick={() => {
               setOption('selectionAlwaysOnDisplay', !selectionAlwaysOnDisplay);
@@ -208,7 +157,6 @@ export default function Settings(): JSX.Element {
             checked={selectionAlwaysOnDisplay}
             text="Retain selection"
           />
-
           <Switch
             onClick={() => {
               setOption('isCodeHighlighted', !isCodeHighlighted);
@@ -216,7 +164,6 @@ export default function Settings(): JSX.Element {
             checked={isCodeHighlighted}
             text="Enable Code Highlighting"
           />
-
           <Switch
             onClick={() => {
               setOption('isCodeShiki', !isCodeShiki);

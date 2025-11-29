@@ -21,7 +21,6 @@ export const DEFAULT_SETTINGS = {
   isCharLimitUtf8: false,
   isCodeHighlighted: true,
   isCodeShiki: false,
-  isCollab: false,
   isMaxLength: false,
   isRichText: true,
   listStrictIndent: false,
@@ -36,7 +35,6 @@ export const DEFAULT_SETTINGS = {
   tableCellBackgroundColor: true,
   tableCellMerge: true,
   tableHorizontalScroll: true,
-  useCollabV2: false,
 } as const;
 
 // These are mutated in setupEnv
