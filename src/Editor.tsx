@@ -39,7 +39,6 @@ import CodeHighlightShikiPlugin from './plugins/CodeHighlightShikiPlugin';
 import CollapsiblePlugin from './plugins/CollapsiblePlugin';
 import ComponentPickerPlugin from './plugins/ComponentPickerPlugin';
 import ContextMenuPlugin from './plugins/ContextMenuPlugin';
-import DragDropPaste from './plugins/DragDropPastePlugin';
 import DraggableBlockPlugin from './plugins/DraggableBlockPlugin';
 import EmojiPickerPlugin from './plugins/EmojiPickerPlugin';
 import EmojisPlugin from './plugins/EmojisPlugin';
@@ -74,7 +73,6 @@ export default function Editor(): JSX.Element {
       isMaxLength,
       isCharLimit,
       hasLinkAttributes,
-      hasNestedTables,
       isCharLimitUtf8,
       isRichText,
       showTreeView,
@@ -145,7 +143,6 @@ export default function Editor(): JSX.Element {
           !isRichText ? 'plain-text' : ''
         }`}>
         {isMaxLength && <MaxLengthPlugin maxLength={30} />}
-        <DragDropPaste />
         <AutoFocusPlugin />
         {selectionAlwaysOnDisplay && <SelectionAlwaysOnDisplay />}
         <ClearEditorPlugin />
@@ -182,7 +179,6 @@ export default function Editor(): JSX.Element {
               hasCellMerge={tableCellMerge}
               hasCellBackgroundColor={tableCellBackgroundColor}
               hasHorizontalScroll={tableHorizontalScroll}
-              hasNestedTables={hasNestedTables}
             />
             <TableCellResizer />
             <LinkPlugin hasLinkAttributes={hasLinkAttributes} />

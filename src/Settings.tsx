@@ -11,7 +11,7 @@ import type {JSX} from 'react';
 import {CAN_USE_BEFORE_INPUT} from '@lexical/utils';
 import {useEffect, useState} from 'react';
 
-import {INITIAL_SETTINGS, isDevPlayground} from './appSettings';
+import {INITIAL_SETTINGS} from './appSettings';
 import {useSettings} from './context/SettingsContext';
 import Switch from './ui/Switch';
 
@@ -19,9 +19,7 @@ export default function Settings(): JSX.Element {
   const {
     setOption,
     settings: {
-      measureTypingPerf,
       isRichText,
-      hasNestedTables,
       isMaxLength,
       hasLinkAttributes,
       isCharLimit,
@@ -58,11 +56,6 @@ export default function Settings(): JSX.Element {
       {showSettings ? (
         <div className="switches">
           <Switch
-            onClick={() => setOption('measureTypingPerf', !measureTypingPerf)}
-            checked={measureTypingPerf}
-            text="Measure Perf"
-          />
-          <Switch
             onClick={() => setOption('showTreeView', !showTreeView)}
             checked={showTreeView}
             text="Debug View"
@@ -80,13 +73,6 @@ export default function Settings(): JSX.Element {
             }}
             checked={isRichText}
             text="Rich Text"
-          />
-          <Switch
-            onClick={() => {
-              setOption('hasNestedTables', !hasNestedTables);
-            }}
-            checked={hasNestedTables}
-            text="Nested Tables"
           />
           <Switch
             onClick={() => setOption('isCharLimit', !isCharLimit)}
