@@ -42,7 +42,6 @@ import ContextMenuPlugin from './plugins/ContextMenuPlugin';
 import DraggableBlockPlugin from './plugins/DraggableBlockPlugin';
 import EmojiPickerPlugin from './plugins/EmojiPickerPlugin';
 import EmojisPlugin from './plugins/EmojisPlugin';
-import EquationsPlugin from './plugins/EquationsPlugin';
 import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
 import FloatingTextFormatToolbarPlugin from './plugins/FloatingTextFormatToolbarPlugin';
 import KeywordsPlugin from './plugins/KeywordsPlugin';
@@ -184,7 +183,6 @@ export default function Editor(): JSX.Element {
             <LinkPlugin hasLinkAttributes={hasLinkAttributes} />
             <ClickableLinkPlugin disabled={isEditable} />
             <HorizontalRulePlugin />
-            <EquationsPlugin />
             <TabFocusPlugin />
             <TabIndentationPlugin maxIndent={7} />
             <CollapsiblePlugin />

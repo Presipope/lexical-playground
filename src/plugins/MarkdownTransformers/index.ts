@@ -42,11 +42,6 @@ import {
   LexicalNode,
 } from 'lexical';
 
-import {
-  $createEquationNode,
-  $isEquationNode,
-  EquationNode,
-} from '../../nodes/EquationNode';
 import emojiList from '../../utils/emoji-list';
 
 export const HR: ElementTransformer = {
@@ -82,26 +77,6 @@ export const EMOJI: TextMatchTransformer = {
     }
   },
   trigger: ':',
-  type: 'text-match',
-};
-
-export const EQUATION: TextMatchTransformer = {
-  dependencies: [EquationNode],
-  export: (node) => {
-    if (!$isEquationNode(node)) {
-      return null;
-    }
-
-    return `$${node.getEquation()}$`;
-  },
-  importRegExp: /\$([^$]+?)\$/,
-  regExp: /\$([^$]+?)\$$/,
-  replace: (textNode, match) => {
-    const [, equation] = match;
-    const equationNode = $createEquationNode(equation, true);
-    textNode.replace(equationNode);
-  },
-  trigger: '$',
   type: 'text-match',
 };
 
@@ -267,7 +242,6 @@ export const PLAYGROUND_TRANSFORMERS: Array<Transformer> = [
   TABLE,
   HR,
   EMOJI,
-  EQUATION,
   CHECK_LIST,
   ...ELEMENT_TRANSFORMERS,
   ...MULTILINE_ELEMENT_TRANSFORMERS,

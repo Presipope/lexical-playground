@@ -37,7 +37,6 @@ import * as ReactDOM from 'react-dom';
 
 import useModal from '../../hooks/useModal';
 import {INSERT_COLLAPSIBLE_COMMAND} from '../CollapsiblePlugin';
-import {InsertEquationDialog} from '../EquationsPlugin';
 import InsertLayoutDialog from '../LayoutPlugin/InsertLayoutDialog';
 import {INSERT_PAGE_BREAK} from '../PageBreakPlugin';
 import {InsertTableDialog} from '../TablePlugin';
@@ -233,14 +232,6 @@ function getBaseOptions(editor: LexicalEditor, showModal: ShowModal) {
       icon: <i className="icon page-break" />,
       keywords: ['page break', 'divider'],
       onSelect: () => editor.dispatchCommand(INSERT_PAGE_BREAK, undefined),
-    }),
-    new ComponentPickerOption('Equation', {
-      icon: <i className="icon equation" />,
-      keywords: ['equation', 'latex', 'math'],
-      onSelect: () =>
-        showModal('Insert Equation', (onClose) => (
-          <InsertEquationDialog activeEditor={editor} onClose={onClose} />
-        )),
     }),
     new ComponentPickerOption('Collapsible', {
       icon: <i className="icon caret-right" />,
