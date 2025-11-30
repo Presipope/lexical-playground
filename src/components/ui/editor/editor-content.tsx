@@ -19,7 +19,7 @@ import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin'
 import { useLexicalEditable } from '@lexical/react/useLexicalEditable'
 import { CAN_USE_DOM } from '@lexical/utils'
 
-import { useSharedHistory, useActiveEditor, useEditorConfig } from './lib/context'
+import { useSharedHistory, useActiveEditor, useEditorConfig, useToolbarState } from './lib/context'
 import { FloatingLinkEditorPlugin } from './plugins/floating-link-editor'
 
 export interface EditorContentProps {
@@ -74,13 +74,13 @@ export function EditorContent({
   const [editor] = useLexicalComposerContext()
   const { historyState } = useSharedHistory()
   const { setActiveEditor } = useActiveEditor()
+  const { isLinkEditMode, setIsLinkEditMode } = useToolbarState()
   const config = useEditorConfig()
   const isEditable = useLexicalEditable()
 
   const placeholder = placeholderProp ?? config.placeholder ?? 'Start writing...'
 
-  // Floating link editor state
-  const [isLinkEditMode, setIsLinkEditMode] = useState(false)
+  // Floating link editor anchor
   const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null)
 
   const onRef = (floatingAnchorElem: HTMLDivElement) => {

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { EditorRoot } from './editor-root'
 import { EditorToolbar, ToolbarSeparator } from './editor-toolbar'
 import { EditorContent } from './editor-content'
-import { HistoryButtons, FormatButtons, BlockFormatDropdown } from './toolbar'
+import { HistoryButtons, FormatButtons, BlockFormatDropdown, AlignDropdown } from './toolbar'
 
 export interface EditorProps {
   /**
@@ -58,7 +58,7 @@ export interface EditorProps {
  * - `EditorRoot` - Root component with providers
  * - `EditorToolbar` - Toolbar container
  * - `EditorContent` - Content area
- * - `HistoryButtons`, `FormatButtons`, `BlockFormatDropdown` - Toolbar components
+ * - `HistoryButtons`, `FormatButtons`, `BlockFormatDropdown`, `AlignDropdown` - Toolbar components
  *
  * @example
  * ```tsx
@@ -102,6 +102,8 @@ export function Editor({
           <BlockFormatDropdown />
           <ToolbarSeparator />
           <FormatButtons />
+          <ToolbarSeparator />
+          <AlignDropdown />
         </EditorToolbar>
       )}
       <EditorContent

@@ -13,10 +13,11 @@ export { EditorContent } from './editor-content'
 export type { EditorContentProps } from './editor-content'
 
 // Toolbar components
-export { HistoryButtons, FormatButtons, BlockFormatDropdown } from './toolbar'
+export { HistoryButtons, FormatButtons, BlockFormatDropdown, AlignDropdown } from './toolbar'
 export type { HistoryButtonsProps } from './toolbar/history-buttons'
 export type { FormatButtonsProps } from './toolbar/format-buttons'
 export type { BlockFormatDropdownProps } from './toolbar/block-format'
+export type { AlignDropdownProps } from './toolbar/align-dropdown'
 
 // Context hooks
 export {

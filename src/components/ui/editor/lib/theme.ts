@@ -37,8 +37,8 @@ export const editorTheme: EditorThemeClasses = {
     capitalize: 'capitalize',
   },
 
-  // Links
-  link: 'text-primary no-underline hover:underline cursor-pointer',
+  // Links - blue color with underline for clear visual distinction
+  link: 'text-blue-600 underline decoration-blue-600/50 hover:decoration-blue-600 cursor-pointer',
 
   // Hashtags
   hashtag: 'editor-hashtag',

@@ -155,12 +155,15 @@ interface ToolbarContextValue {
     key: K,
     value: ToolbarState[K]
   ) => void
+  isLinkEditMode: boolean
+  setIsLinkEditMode: Dispatch<SetStateAction<boolean>>
 }
 
 const ToolbarContext = createContext<ToolbarContextValue | null>(null)
 
 export function ToolbarProvider({ children }: { children: ReactNode }) {
   const [toolbarState, setToolbarState] = useState<ToolbarState>(initialToolbarState)
+  const [isLinkEditMode, setIsLinkEditMode] = useState(false)
 
   const updateToolbarState = useCallback(
     <K extends keyof ToolbarState>(key: K, value: ToolbarState[K]) => {
@@ -170,8 +173,8 @@ export function ToolbarProvider({ children }: { children: ReactNode }) {
   )
 
   const value = useMemo(
-    () => ({ toolbarState, updateToolbarState }),
-    [toolbarState, updateToolbarState]
+    () => ({ toolbarState, updateToolbarState, isLinkEditMode, setIsLinkEditMode }),
+    [toolbarState, updateToolbarState, isLinkEditMode]
   )
 
   return (

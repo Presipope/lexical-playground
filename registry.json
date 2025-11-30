@@ -72,6 +72,10 @@
       "type": "registry:ui"
     },
     {
+      "path": "ui/editor/toolbar/align-dropdown.tsx",
+      "type": "registry:ui"
+    },
+    {
       "path": "ui/editor/plugins/floating-link-editor.tsx",
       "type": "registry:ui"
     }

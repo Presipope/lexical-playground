@@ -17,6 +17,7 @@ import {
   Highlighter,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useToolbarState } from '../lib/context'
 
 function getSelectedNode(selection: ReturnType<typeof $getSelection>) {
   if (!$isRangeSelection(selection)) return null
@@ -52,6 +53,7 @@ export function FormatButtons({
   formats = defaultFormats,
 }: FormatButtonsProps) {
   const [editor] = useLexicalComposerContext()
+  const { setIsLinkEditMode } = useToolbarState()
   const [isEditable, setIsEditable] = useState(() => editor.isEditable())
 
   // Format states
@@ -116,10 +118,12 @@ export function FormatButtons({
   const toggleLink = useCallback(() => {
     if (!isLink) {
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, 'https://')
+      // Immediately enter edit mode so user can paste their URL
+      setIsLinkEditMode(true)
     } else {
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
     }
-  }, [editor, isLink])
+  }, [editor, isLink, setIsLinkEditMode])
 
   const buttons = {
     bold: {
