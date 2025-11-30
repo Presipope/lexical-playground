@@ -90,6 +90,14 @@
     {
       "path": "ui/editor/plugins/floating-text-format-toolbar.tsx",
       "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/emoji-picker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/emoji-list.ts",
+      "type": "registry:ui"
     }
   ],
   "cssVars": {

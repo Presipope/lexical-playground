@@ -22,6 +22,7 @@ import { CAN_USE_DOM } from '@lexical/utils'
 import { useSharedHistory, useActiveEditor, useEditorConfig, useToolbarState } from './lib/context'
 import { FloatingLinkEditorPlugin } from './plugins/floating-link-editor'
 import { FloatingTextFormatToolbarPlugin } from './plugins/floating-text-format-toolbar'
+import { EmojiPickerPlugin } from './plugins/emoji-picker'
 
 export interface EditorContentProps {
   /**
@@ -133,6 +134,7 @@ export function EditorContent({
       <TabIndentationPlugin maxIndent={maxIndent} />
       <HashtagPlugin />
       <ClearEditorPlugin />
+      <EmojiPickerPlugin />
 
       {/* Floating link editor */}
       {floatingAnchorElem && (

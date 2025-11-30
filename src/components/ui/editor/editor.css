@@ -963,3 +963,47 @@
   margin: 0 0.125rem;
   background-color: var(--color-border);
 }
+
+/* Emoji picker */
+.emoji-picker-menu {
+  position: absolute;
+  z-index: 100;
+  min-width: 200px;
+  max-height: 250px;
+  overflow-y: auto;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-popover);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+.emoji-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem;
+}
+
+.emoji-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 150ms;
+}
+
+.emoji-picker-item:hover,
+.emoji-picker-item.selected {
+  background-color: var(--color-accent);
+}
+
+.emoji-picker-item-emoji {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.emoji-picker-item-title {
+  color: var(--color-foreground);
+}
