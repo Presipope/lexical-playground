@@ -1,30 +1,130 @@
-// Main editor component with sensible defaults
+// =============================================================================
+// MAIN EDITOR COMPONENT
+// =============================================================================
+
+// The "kitchen sink" editor with all features enabled
 export { Editor } from './editor'
 export type { EditorProps } from './editor'
 
-// Composable editor components
+// =============================================================================
+// COMPOSABLE EDITOR COMPONENTS
+// =============================================================================
+
+// Root wrapper - provides all context providers and Lexical setup
 export { EditorRoot } from './editor-root'
 export type { EditorRootProps } from './editor-root'
 
+// Toolbar container
 export { EditorToolbar, ToolbarSeparator } from './editor-toolbar'
 export type { EditorToolbarProps } from './editor-toolbar'
 
-export { EditorContent } from './editor-content'
-export type { EditorContentProps } from './editor-content'
+// Content area with configurable plugins
+export {
+  EditorContent,
+  CorePlugins,
+  TablePlugins,
+  FloatingPlugins,
+  EnhancementPlugins,
+  useFloatingAnchor,
+} from './editor-content'
+export type { EditorContentProps, PluginConfig, CorePluginsProps, TablePluginsProps } from './editor-content'
 
-// Toolbar components
-export { HistoryButtons, FormatButtons, BlockFormatDropdown, AlignDropdown, TextFormatDropdown, FontColorPicker, BackgroundColorPicker, InsertDropdown } from './toolbar'
+// =============================================================================
+// TOOLBAR COMPONENTS
+// =============================================================================
+
+export { HistoryButtons } from './toolbar/history-buttons'
 export type { HistoryButtonsProps } from './toolbar/history-buttons'
-export type { FormatButtonsProps } from './toolbar/format-buttons'
-export type { BlockFormatDropdownProps } from './toolbar/block-format'
-export type { AlignDropdownProps } from './toolbar/align-dropdown'
-export type { TextFormatDropdownProps } from './toolbar/text-format-dropdown'
-export type { InsertDropdownProps } from './toolbar/insert-dropdown'
 
-// UI components
+export { FormatButtons } from './toolbar/format-buttons'
+export type { FormatButtonsProps } from './toolbar/format-buttons'
+
+export { BlockFormatDropdown } from './toolbar/block-format'
+export type { BlockFormatDropdownProps } from './toolbar/block-format'
+
+export { AlignDropdown } from './toolbar/align-dropdown'
+export type { AlignDropdownProps } from './toolbar/align-dropdown'
+
+export { TextFormatDropdown } from './toolbar/text-format-dropdown'
+export type { TextFormatDropdownProps } from './toolbar/text-format-dropdown'
+
+export { FontColorPicker } from './toolbar/font-color-picker'
+export { BackgroundColorPicker } from './toolbar/bg-color-picker'
+
+// Insert dropdown and composable items
+export {
+  InsertDropdown,
+  InsertItem,
+  InsertHorizontalRule,
+  InsertTable,
+  InsertColumns,
+  InsertCollapsible,
+  InsertSeparator,
+} from './toolbar/insert-dropdown'
+export type {
+  InsertDropdownProps,
+  InsertItemProps,
+  InsertHorizontalRuleProps,
+  InsertTableProps,
+  InsertColumnsProps,
+  InsertCollapsibleProps,
+  InsertSeparatorProps,
+} from './toolbar/insert-dropdown'
+
+// =============================================================================
+// PLUGINS
+// =============================================================================
+
+// Individual plugins for custom editor composition
+export {
+  CollapsiblePlugin,
+  INSERT_COLLAPSIBLE_COMMAND,
+  DraggableBlockPlugin,
+  EmojiPickerPlugin,
+  FloatingLinkEditorPlugin,
+  FloatingTextFormatToolbarPlugin,
+  KeyboardShortcutsPlugin,
+  LayoutPlugin,
+  INSERT_LAYOUT_COMMAND,
+  UPDATE_LAYOUT_COMMAND,
+  TableActionMenuPlugin,
+  TableCellResizerPlugin,
+  TableHoverActionsPlugin,
+} from './plugins'
+
+// =============================================================================
+// NODES
+// =============================================================================
+
+// Custom nodes for extending the editor
+export {
+  CollapsibleContainerNode,
+  $createCollapsibleContainerNode,
+  $isCollapsibleContainerNode,
+  CollapsibleTitleNode,
+  $createCollapsibleTitleNode,
+  $isCollapsibleTitleNode,
+  CollapsibleContentNode,
+  $createCollapsibleContentNode,
+  $isCollapsibleContentNode,
+  LayoutContainerNode,
+  $createLayoutContainerNode,
+  $isLayoutContainerNode,
+  LayoutItemNode,
+  $createLayoutItemNode,
+  $isLayoutItemNode,
+} from './nodes'
+
+// =============================================================================
+// UI COMPONENTS
+// =============================================================================
+
 export { ColorPicker } from './ui/color-picker'
 
-// Context hooks
+// =============================================================================
+// CONTEXT HOOKS
+// =============================================================================
+
 export {
   useEditorConfig,
   useSharedHistory,
@@ -34,5 +134,19 @@ export {
   useFlashMessage,
 } from './lib/context'
 
-// Theme
+// =============================================================================
+// UTILITY HOOKS
+// =============================================================================
+
+export {
+  useEditorCommand,
+  useTextFormat,
+  useEditor,
+  useCommandListener,
+} from './lib/use-editor-command'
+
+// =============================================================================
+// THEME
+// =============================================================================
+
 export { editorTheme } from './lib/theme'
