@@ -27,6 +27,9 @@ import { EmojiPickerPlugin } from './plugins/emoji-picker'
 import { KeyboardShortcutsPlugin } from './plugins/keyboard-shortcuts'
 import { CollapsiblePlugin } from './plugins/collapsible-plugin'
 import { LayoutPlugin } from './plugins/layout-plugin'
+import { TableActionMenuPlugin } from './plugins/table-action-menu-plugin'
+import { TableCellResizerPlugin } from './plugins/table-cell-resizer-plugin'
+import { TableHoverActionsPlugin } from './plugins/table-hover-actions-plugin'
 
 export interface EditorContentProps {
   /**
@@ -168,11 +171,23 @@ export function EditorContent({
       {/* Optional plugins */}
       {autoFocus && <AutoFocusPlugin />}
       {enableTable && (
-        <TablePlugin
-          hasCellMerge={tableCellMerge}
-          hasCellBackgroundColor={tableCellBackgroundColor}
-          hasHorizontalScroll={tableHorizontalScroll}
-        />
+        <>
+          <TablePlugin
+            hasCellMerge={tableCellMerge}
+            hasCellBackgroundColor={tableCellBackgroundColor}
+            hasHorizontalScroll={tableHorizontalScroll}
+          />
+          <TableCellResizerPlugin />
+          {floatingAnchorElem && (
+            <>
+              <TableActionMenuPlugin
+                anchorElem={floatingAnchorElem}
+                cellMerge={tableCellMerge}
+              />
+              <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
+            </>
+          )}
+        </>
       )}
     </div>
   )

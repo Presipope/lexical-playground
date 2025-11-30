@@ -1333,3 +1333,137 @@
 .editor-layout-item:focus-within {
   border-color: var(--color-ring);
 }
+
+/* Table Cell Action Menu */
+.table-cell-action-button-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.table-cell-action-button-container--active {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.table-cell-action-button-container--inactive {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.table-cell-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  background-color: var(--color-muted);
+  color: var(--color-muted-foreground);
+  transform: translate(-105%, 4px);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.table-cell-action-button:hover {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+.table-action-menu-dropdown {
+  position: fixed;
+  z-index: 200;
+  min-width: 180px;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-popover);
+  padding: 0.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+}
+
+.table-action-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  transition: background-color 0.15s;
+}
+
+.table-action-menu-item:hover {
+  background-color: var(--color-accent);
+}
+
+.table-action-menu-item.text-destructive {
+  color: var(--color-destructive);
+}
+
+.table-action-menu-item.text-destructive:hover {
+  background-color: color-mix(in srgb, var(--color-destructive) 10%, transparent);
+}
+
+/* Table Cell Resizer */
+.table-cell-resizer {
+  position: absolute;
+  touch-action: none;
+  z-index: 10;
+}
+
+@media (pointer: coarse) {
+  .table-cell-resizer {
+    background-color: hsl(var(--primary) / 0.3);
+    mix-blend-mode: color;
+  }
+}
+
+/* Table Hover Actions (+ buttons) */
+.table-add-rows,
+.table-add-columns {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  cursor: pointer;
+  background-color: var(--color-muted);
+  color: var(--color-muted-foreground);
+  animation: table-controls-fade 0.2s ease;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.table-add-rows {
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.table-add-columns {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.table-add-rows:hover,
+.table-add-columns:hover {
+  background-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary));
+}
+
+@keyframes table-controls-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

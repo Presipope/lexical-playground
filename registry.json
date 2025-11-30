@@ -158,6 +158,22 @@
     {
       "path": "ui/editor/plugins/layout-plugin.tsx",
       "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/table-action-menu-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/table-cell-resizer-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/table-hover-actions-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/use-debounce.ts",
+      "type": "registry:ui"
     }
   ],
   "cssVars": {
