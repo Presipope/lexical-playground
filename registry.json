@@ -12,10 +12,12 @@
     "@lexical/list",
     "@lexical/overflow",
     "@lexical/rich-text",
+    "@lexical/selection",
     "@lexical/table",
     "@lexical/utils",
     "clsx",
-    "tailwind-merge"
+    "tailwind-merge",
+    "lucide-react"
   ],
   "registryDependencies": [
     "utils"
@@ -67,6 +69,10 @@
     },
     {
       "path": "ui/editor/toolbar/block-format.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/floating-link-editor.tsx",
       "type": "registry:ui"
     }
   ],

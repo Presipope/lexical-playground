@@ -81,8 +81,8 @@ export const editorTheme: EditorThemeClasses = {
 
   // Lists
   list: {
-    ul: 'p-0 m-0 list-outside',
-    ol: 'p-0 m-0 list-outside',
+    ul: 'p-0 m-0 ml-4 list-disc list-outside',
+    ol: 'p-0 m-0 ml-4 list-decimal list-outside',
     olDepth: [
       'p-0 m-0 list-outside list-decimal',
       'p-0 m-0 list-outside list-[upper-alpha]',

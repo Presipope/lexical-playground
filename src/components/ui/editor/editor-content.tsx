@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
@@ -20,6 +20,7 @@ import { useLexicalEditable } from '@lexical/react/useLexicalEditable'
 import { CAN_USE_DOM } from '@lexical/utils'
 
 import { useSharedHistory, useActiveEditor, useEditorConfig } from './lib/context'
+import { FloatingLinkEditorPlugin } from './plugins/floating-link-editor'
 
 export interface EditorContentProps {
   /**
@@ -78,6 +79,16 @@ export function EditorContent({
 
   const placeholder = placeholderProp ?? config.placeholder ?? 'Start writing...'
 
+  // Floating link editor state
+  const [isLinkEditMode, setIsLinkEditMode] = useState(false)
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null)
+
+  const onRef = (floatingAnchorElem: HTMLDivElement) => {
+    if (floatingAnchorElem !== null) {
+      setFloatingAnchorElem(floatingAnchorElem)
+    }
+  }
+
   // Set active editor on mount
   useEffect(() => {
     setActiveEditor(editor)
@@ -102,7 +113,7 @@ export function EditorContent({
       <RichTextPlugin
         contentEditable={
           <div className="editor-scroller">
-            <div className="editor-input-wrapper">
+            <div className="editor-input-wrapper" ref={onRef}>
               <ContentEditable className="editor-input" />
             </div>
           </div>
@@ -121,6 +132,15 @@ export function EditorContent({
       <TabIndentationPlugin maxIndent={maxIndent} />
       <HashtagPlugin />
       <ClearEditorPlugin />
+
+      {/* Floating link editor */}
+      {floatingAnchorElem && (
+        <FloatingLinkEditorPlugin
+          anchorElem={floatingAnchorElem}
+          isLinkEditMode={isLinkEditMode}
+          setIsLinkEditMode={setIsLinkEditMode}
+        />
+      )}
 
       {/* Optional plugins */}
       {autoFocus && <AutoFocusPlugin />}
