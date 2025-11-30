@@ -410,8 +410,7 @@ function TableCellResizer({ editor }: { editor: LexicalEditor }): React.JSX.Elem
           styles[draggingDirection].height = `${tableRect.height}px`
         }
 
-        styles[draggingDirection].backgroundColor = 'hsl(var(--primary))'
-        styles[draggingDirection].mixBlendMode = 'unset'
+        styles[draggingDirection].backgroundColor = '#adf'
       }
 
       return styles
