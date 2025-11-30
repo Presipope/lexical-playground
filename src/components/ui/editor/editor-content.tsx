@@ -22,6 +22,7 @@ import { CAN_USE_DOM } from '@lexical/utils'
 import { useSharedHistory, useActiveEditor, useEditorConfig, useToolbarState } from './lib/context'
 import { FloatingLinkEditorPlugin } from './plugins/floating-link-editor'
 import { FloatingTextFormatToolbarPlugin } from './plugins/floating-text-format-toolbar'
+import { DraggableBlockPlugin } from './plugins/draggable-block-plugin'
 import { EmojiPickerPlugin } from './plugins/emoji-picker'
 import { KeyboardShortcutsPlugin } from './plugins/keyboard-shortcuts'
 
@@ -153,6 +154,11 @@ export function EditorContent({
           anchorElem={floatingAnchorElem}
           setIsLinkEditMode={setIsLinkEditMode}
         />
+      )}
+
+      {/* Draggable block plugin - hidden on small viewports */}
+      {floatingAnchorElem && !isSmallViewport && (
+        <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
       )}
 
       {/* Optional plugins */}
