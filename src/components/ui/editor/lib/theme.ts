@@ -124,9 +124,9 @@ export const editorTheme: EditorThemeClasses = {
   hr: 'editor-hr',
   hrSelected: 'editor-hr-selected',
 
-  // Layout
-  layoutContainer: 'grid gap-2.5 my-2.5',
-  layoutItem: 'border border-dashed border-border p-2 px-4 min-w-0 max-w-full',
+  // Layout (columns)
+  layoutContainer: 'editor-layout-container',
+  layoutItem: 'editor-layout-item',
 
   // Indentation
   indent: 'editor-indent',

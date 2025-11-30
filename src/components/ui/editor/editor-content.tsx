@@ -25,6 +25,8 @@ import { FloatingTextFormatToolbarPlugin } from './plugins/floating-text-format-
 import { DraggableBlockPlugin } from './plugins/draggable-block-plugin'
 import { EmojiPickerPlugin } from './plugins/emoji-picker'
 import { KeyboardShortcutsPlugin } from './plugins/keyboard-shortcuts'
+import { CollapsiblePlugin } from './plugins/collapsible-plugin'
+import { LayoutPlugin } from './plugins/layout-plugin'
 
 export interface EditorContentProps {
   /**
@@ -138,6 +140,8 @@ export function EditorContent({
       <ClearEditorPlugin />
       <EmojiPickerPlugin />
       <KeyboardShortcutsPlugin />
+      <CollapsiblePlugin />
+      <LayoutPlugin />
 
       {/* Floating link editor */}
       {floatingAnchorElem && (

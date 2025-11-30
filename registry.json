@@ -118,6 +118,46 @@
     {
       "path": "ui/editor/toolbar/bg-color-picker.tsx",
       "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/insert-dropdown.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/index.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-utils.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-container-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-title-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-content-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/layout-container-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/layout-item-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/collapsible-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/layout-plugin.tsx",
+      "type": "registry:ui"
     }
   ],
   "cssVars": {

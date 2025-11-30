@@ -23,6 +23,13 @@ import {
   type EditorConfig,
 } from './lib/context'
 import { editorTheme } from './lib/theme'
+import {
+  CollapsibleContainerNode,
+  CollapsibleTitleNode,
+  CollapsibleContentNode,
+  LayoutContainerNode,
+  LayoutItemNode,
+} from './nodes'
 import './editor.css'
 
 // Default nodes included with the editor
@@ -41,6 +48,11 @@ const defaultNodes: Array<Klass<LexicalNode>> = [
   LinkNode,
   OverflowNode,
   HorizontalRuleNode,
+  CollapsibleContainerNode,
+  CollapsibleTitleNode,
+  CollapsibleContentNode,
+  LayoutContainerNode,
+  LayoutItemNode,
 ]
 
 export interface EditorRootProps {

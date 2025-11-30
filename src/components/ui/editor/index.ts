@@ -13,12 +13,13 @@ export { EditorContent } from './editor-content'
 export type { EditorContentProps } from './editor-content'
 
 // Toolbar components
-export { HistoryButtons, FormatButtons, BlockFormatDropdown, AlignDropdown, TextFormatDropdown, FontColorPicker, BackgroundColorPicker } from './toolbar'
+export { HistoryButtons, FormatButtons, BlockFormatDropdown, AlignDropdown, TextFormatDropdown, FontColorPicker, BackgroundColorPicker, InsertDropdown } from './toolbar'
 export type { HistoryButtonsProps } from './toolbar/history-buttons'
 export type { FormatButtonsProps } from './toolbar/format-buttons'
 export type { BlockFormatDropdownProps } from './toolbar/block-format'
 export type { AlignDropdownProps } from './toolbar/align-dropdown'
 export type { TextFormatDropdownProps } from './toolbar/text-format-dropdown'
+export type { InsertDropdownProps } from './toolbar/insert-dropdown'
 
 // UI components
 export { ColorPicker } from './ui/color-picker'
