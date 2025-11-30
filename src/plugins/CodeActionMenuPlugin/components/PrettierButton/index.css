@@ -4,7 +4,7 @@
 
 .code-action-menu-container .prettier-wrapper .code-error-tips {
   padding: 5px;
-  border-radius: 4px;
+  border-radius: calc(var(--radius) - 0.25rem);
   color: #fff;
   background: #222;
   margin-top: 4px;

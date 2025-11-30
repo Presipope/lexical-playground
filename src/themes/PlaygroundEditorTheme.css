@@ -398,7 +398,7 @@
   background-color: #eee;
   display: block;
   border: 0;
-  border-radius: 20px;
+  border-radius: var(--radius);
   width: 20px;
   height: 20px;
   color: #222;
@@ -626,13 +626,13 @@
   background: #fff;
   border: 1px solid #ddd;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .PlaygroundEditorTheme__contextMenu button:first-child {
-  border-radius: 8px 8px 0px 0px;
+  border-radius: var(--radius) var(--radius) 0px 0px;
 }
 .PlaygroundEditorTheme__contextMenu button:last-child {
-  border-radius: 0px 0px 8px 8px;
+  border-radius: 0px 0px var(--radius) var(--radius);
 }
 .PlaygroundEditorTheme__contextMenuItem {
   width: 100%;

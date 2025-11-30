@@ -1,5 +1,5 @@
 .draggable-block-menu {
-  border-radius: 4px;
+  border-radius: calc(var(--radius) - 0.25rem);
   padding: 2px 1px;
   cursor: grab;
   opacity: 0;

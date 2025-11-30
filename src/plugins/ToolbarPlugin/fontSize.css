@@ -10,7 +10,7 @@
   font-weight: bold;
   font-size: 14px;
   color: #777;
-  border-radius: 5px;
+  border-radius: calc(var(--radius) - 0.25rem);
   border-color: grey;
   height: 15px;
   padding: 2px 4px;

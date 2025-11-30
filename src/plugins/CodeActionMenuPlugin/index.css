@@ -23,7 +23,7 @@
 
 .code-action-menu-container button.menu-item {
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: calc(var(--radius) - 0.25rem);
   padding: 4px;
   background: none;
   cursor: pointer;
