@@ -6,65 +6,53 @@
  *
  */
 
-import {$createLinkNode} from '@lexical/link';
-import {$createListItemNode, $createListNode} from '@lexical/list';
-import {LexicalExtensionComposer} from '@lexical/react/LexicalExtensionComposer';
-import {$createHeadingNode, $createQuoteNode} from '@lexical/rich-text';
-import {
-  $createParagraphNode,
-  $createTextNode,
-  $getRoot,
-  defineExtension,
-} from 'lexical';
-import {type JSX, useMemo} from 'react';
+import { $createLinkNode } from '@lexical/link'
+import { $createListItemNode, $createListNode } from '@lexical/list'
+import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
+import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical'
+import type { JSX } from 'react'
 
-import {buildHTMLConfig} from './buildHTMLConfig';
-import {FlashMessageContext} from './context/FlashMessageContext';
-import {SettingsContext, useSettings} from './context/SettingsContext';
-import {SharedHistoryContext} from './context/SharedHistoryContext';
-import {ToolbarContext} from './context/ToolbarContext';
-import Editor from './Editor';
-import PlaygroundNodes from './nodes/PlaygroundNodes';
-import {TableContext} from './plugins/TablePlugin';
-import Settings from './Settings';
-import PlaygroundEditorTheme from './themes/PlaygroundEditorTheme';
+import { Editor } from './components/ui/editor'
 
 function $prepopulatedRichText() {
-  const root = $getRoot();
+  const root = $getRoot()
   if (root.getFirstChild() === null) {
-    const heading = $createHeadingNode('h1');
-    heading.append($createTextNode('Welcome to the Editor'));
-    root.append(heading);
-    const quote = $createQuoteNode();
+    const heading = $createHeadingNode('h1')
+    heading.append($createTextNode('Welcome to the Editor'))
+    root.append(heading)
+
+    const quote = $createQuoteNode()
     quote.append(
       $createTextNode(
-        `This is a rich text editor built with Lexical. ` +
-          `You can toggle the debug view using the settings button in the bottom-left corner.`,
+        `This is a rich text editor built with Lexical and styled with Tailwind CSS. ` +
+          `It's designed to be easily composable and customizable.`,
       ),
-    );
-    root.append(quote);
-    const paragraph = $createParagraphNode();
+    )
+    root.append(quote)
+
+    const paragraph = $createParagraphNode()
     paragraph.append(
       $createTextNode('Try typing in '),
       $createTextNode('some text').toggleFormat('bold'),
       $createTextNode(' with '),
       $createTextNode('different').toggleFormat('italic'),
       $createTextNode(' formats.'),
-    );
-    root.append(paragraph);
-    const paragraph2 = $createParagraphNode();
+    )
+    root.append(paragraph)
+
+    const paragraph2 = $createParagraphNode()
     paragraph2.append(
       $createTextNode(
-        'Check out the toolbar above for formatting options. You can also use #hashtags or @-mentions!',
+        'Check out the toolbar above for formatting options. You can also use #hashtags!',
       ),
-    );
-    root.append(paragraph2);
-    const paragraph3 = $createParagraphNode();
-    paragraph3.append(
-      $createTextNode(`To learn more about Lexical:`),
-    );
-    root.append(paragraph3);
-    const list = $createListNode('bullet');
+    )
+    root.append(paragraph2)
+
+    const paragraph3 = $createParagraphNode()
+    paragraph3.append($createTextNode(`To learn more about Lexical:`))
+    root.append(paragraph3)
+
+    const list = $createListNode('bullet')
     list.append(
       $createListItemNode().append(
         $createTextNode(`Visit the `),
@@ -80,51 +68,28 @@ function $prepopulatedRichText() {
         ),
         $createTextNode(`.`),
       ),
-    );
-    root.append(list);
+    )
+    root.append(list)
   }
 }
 
-function App(): JSX.Element {
-  const {
-    settings: {emptyEditor},
-  } = useSettings();
-
-  const app = useMemo(
-    () =>
-      defineExtension({
-        $initialEditorState: emptyEditor ? undefined : $prepopulatedRichText,
-        html: buildHTMLConfig(),
-        name: '@lexical/playground',
-        namespace: 'Playground',
-        nodes: PlaygroundNodes,
-        theme: PlaygroundEditorTheme,
-      }),
-    [emptyEditor],
-  );
-
+export default function App(): JSX.Element {
   return (
-    <LexicalExtensionComposer extension={app} contentEditable={null}>
-      <SharedHistoryContext>
-        <TableContext>
-          <ToolbarContext>
-            <div className="editor-shell">
-              <Editor />
-            </div>
-            <Settings />
-          </ToolbarContext>
-        </TableContext>
-      </SharedHistoryContext>
-    </LexicalExtensionComposer>
-  );
-}
-
-export default function PlaygroundApp(): JSX.Element {
-  return (
-    <SettingsContext>
-      <FlashMessageContext>
-        <App />
-      </FlashMessageContext>
-    </SettingsContext>
-  );
+    <div className="min-h-screen bg-background p-8">
+      <div className="mx-auto max-w-4xl">
+        <h1 className="mb-6 text-2xl font-bold text-foreground">
+          Lexical Editor Component
+        </h1>
+        <p className="mb-6 text-muted-foreground">
+          A composable rich text editor built with Lexical and styled with
+          Tailwind CSS following shadcn/ui patterns.
+        </p>
+        <Editor
+          namespace="demo"
+          initialState={$prepopulatedRichText}
+          placeholder="Start writing..."
+        />
+      </div>
+    </div>
+  )
 }

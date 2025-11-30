@@ -1,0 +1,136 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { ContentEditable } from '@lexical/react/LexicalContentEditable'
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
+import { ListPlugin } from '@lexical/react/LexicalListPlugin'
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
+import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin'
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin'
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
+import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin'
+import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
+import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin'
+import { useLexicalEditable } from '@lexical/react/useLexicalEditable'
+import { CAN_USE_DOM } from '@lexical/utils'
+
+import { useSharedHistory, useActiveEditor, useEditorConfig } from './lib/context'
+
+export interface EditorContentProps {
+  /**
+   * Placeholder text when editor is empty
+   */
+  placeholder?: string
+  /**
+   * Whether to auto focus the editor on mount
+   */
+  autoFocus?: boolean
+  /**
+   * Additional class name for the content area
+   */
+  className?: string
+  /**
+   * Enable table features
+   */
+  enableTable?: boolean
+  /**
+   * Enable horizontal scroll for tables
+   */
+  tableHorizontalScroll?: boolean
+  /**
+   * Enable table cell merging
+   */
+  tableCellMerge?: boolean
+  /**
+   * Enable table cell background color
+   */
+  tableCellBackgroundColor?: boolean
+  /**
+   * Maximum indent level for lists
+   */
+  maxIndent?: number
+}
+
+function Placeholder({ text }: { text: string }) {
+  return <div className="editor-placeholder">{text}</div>
+}
+
+export function EditorContent({
+  placeholder: placeholderProp,
+  autoFocus = true,
+  className = '',
+  enableTable = true,
+  tableHorizontalScroll = true,
+  tableCellMerge = true,
+  tableCellBackgroundColor = true,
+  maxIndent = 7,
+}: EditorContentProps) {
+  const [editor] = useLexicalComposerContext()
+  const { historyState } = useSharedHistory()
+  const { setActiveEditor } = useActiveEditor()
+  const config = useEditorConfig()
+  const isEditable = useLexicalEditable()
+
+  const placeholder = placeholderProp ?? config.placeholder ?? 'Start writing...'
+
+  // Set active editor on mount
+  useEffect(() => {
+    setActiveEditor(editor)
+  }, [editor, setActiveEditor])
+
+  // Track viewport width for responsive features
+  const [isSmallViewport, setIsSmallViewport] = useState(false)
+  useEffect(() => {
+    if (!CAN_USE_DOM) return
+
+    const updateViewport = () => {
+      setIsSmallViewport(window.matchMedia('(max-width: 1025px)').matches)
+    }
+
+    updateViewport()
+    window.addEventListener('resize', updateViewport)
+    return () => window.removeEventListener('resize', updateViewport)
+  }, [])
+
+  return (
+    <div className={`editor-container ${className}`}>
+      <RichTextPlugin
+        contentEditable={
+          <div className="editor-scroller">
+            <div className="editor-input-wrapper">
+              <ContentEditable className="editor-input" />
+            </div>
+          </div>
+        }
+        placeholder={<Placeholder text={placeholder} />}
+        ErrorBoundary={LexicalErrorBoundary}
+      />
+
+      {/* Core plugins */}
+      <HistoryPlugin externalHistoryState={historyState} />
+      <ListPlugin />
+      <CheckListPlugin />
+      <LinkPlugin />
+      <ClickableLinkPlugin disabled={isEditable} />
+      <HorizontalRulePlugin />
+      <TabIndentationPlugin maxIndent={maxIndent} />
+      <HashtagPlugin />
+      <ClearEditorPlugin />
+
+      {/* Optional plugins */}
+      {autoFocus && <AutoFocusPlugin />}
+      {enableTable && (
+        <TablePlugin
+          hasCellMerge={tableCellMerge}
+          hasCellBackgroundColor={tableCellBackgroundColor}
+          hasHorizontalScroll={tableHorizontalScroll}
+        />
+      )}
+    </div>
+  )
+}
