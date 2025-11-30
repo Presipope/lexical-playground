@@ -21,6 +21,7 @@ import { CAN_USE_DOM } from '@lexical/utils'
 
 import { useSharedHistory, useActiveEditor, useEditorConfig, useToolbarState } from './lib/context'
 import { FloatingLinkEditorPlugin } from './plugins/floating-link-editor'
+import { FloatingTextFormatToolbarPlugin } from './plugins/floating-text-format-toolbar'
 
 export interface EditorContentProps {
   /**
@@ -138,6 +139,14 @@ export function EditorContent({
         <FloatingLinkEditorPlugin
           anchorElem={floatingAnchorElem}
           isLinkEditMode={isLinkEditMode}
+          setIsLinkEditMode={setIsLinkEditMode}
+        />
+      )}
+
+      {/* Floating text format toolbar */}
+      {floatingAnchorElem && (
+        <FloatingTextFormatToolbarPlugin
+          anchorElem={floatingAnchorElem}
           setIsLinkEditMode={setIsLinkEditMode}
         />
       )}

@@ -86,6 +86,10 @@
     {
       "path": "ui/editor/plugins/floating-link-editor.tsx",
       "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/floating-text-format-toolbar.tsx",
+      "type": "registry:ui"
     }
   ],
   "cssVars": {

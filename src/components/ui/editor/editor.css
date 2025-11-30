@@ -912,3 +912,54 @@
 .floating-link-trash:hover {
   color: var(--color-destructive);
 }
+
+/* Floating text format toolbar */
+.floating-text-format-toolbar {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-popover);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+
+.floating-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--color-foreground);
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+}
+
+.floating-toolbar-btn:hover {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+.floating-toolbar-btn.active {
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+.floating-toolbar-separator {
+  width: 1px;
+  height: 1.25rem;
+  margin: 0 0.125rem;
+  background-color: var(--color-border);
+}
