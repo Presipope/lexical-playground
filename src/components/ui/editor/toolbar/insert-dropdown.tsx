@@ -7,30 +7,14 @@ import { INSERT_TABLE_COMMAND } from '@lexical/table'
 import {
   Plus,
   ChevronDown,
-  Minus,
+  SeparatorHorizontal,
   Table,
   Columns,
-  ChevronRight,
+  FoldVertical,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { INSERT_COLLAPSIBLE_COMMAND } from '../plugins/collapsible-plugin'
 import { INSERT_LAYOUT_COMMAND } from '../plugins/layout-plugin'
-
-type InsertType = 'horizontal-rule' | 'table' | 'columns' | 'collapsible'
-
-const insertTypeToName: Record<InsertType, string> = {
-  'horizontal-rule': 'Horizontal Rule',
-  'table': 'Table',
-  'columns': 'Columns Layout',
-  'collapsible': 'Collapsible',
-}
-
-const insertTypeToIcon: Record<InsertType, typeof Plus> = {
-  'horizontal-rule': Minus,
-  'table': Table,
-  'columns': Columns,
-  'collapsible': ChevronRight,
-}
 
 export interface InsertDropdownProps {
   className?: string
@@ -39,8 +23,7 @@ export interface InsertDropdownProps {
 export function InsertDropdown({ className }: InsertDropdownProps) {
   const [editor] = useLexicalComposerContext()
   const [isOpen, setIsOpen] = useState(false)
-  const [showTablePicker, setShowTablePicker] = useState(false)
-  const [showLayoutPicker, setShowLayoutPicker] = useState(false)
+  const [activeSubmenu, setActiveSubmenu] = useState<'table' | 'columns' | null>(null)
   const [isEditable, setIsEditable] = useState(() => editor.isEditable())
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -55,8 +38,7 @@ export function InsertDropdown({ className }: InsertDropdownProps) {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
-        setShowTablePicker(false)
-        setShowLayoutPicker(false)
+        setActiveSubmenu(null)
       }
     }
 
@@ -74,7 +56,7 @@ export function InsertDropdown({ className }: InsertDropdownProps) {
   const insertTable = useCallback((rows: number, columns: number) => {
     editor.dispatchCommand(INSERT_TABLE_COMMAND, { rows: String(rows), columns: String(columns) })
     setIsOpen(false)
-    setShowTablePicker(false)
+    setActiveSubmenu(null)
   }, [editor])
 
   const insertCollapsible = useCallback(() => {
@@ -85,7 +67,7 @@ export function InsertDropdown({ className }: InsertDropdownProps) {
   const insertLayout = useCallback((template: string) => {
     editor.dispatchCommand(INSERT_LAYOUT_COMMAND, template)
     setIsOpen(false)
-    setShowLayoutPicker(false)
+    setActiveSubmenu(null)
   }, [editor])
 
   return (
@@ -104,56 +86,46 @@ export function InsertDropdown({ className }: InsertDropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="editor-dropdown-content mt-1 min-w-[200px]">
+        <div className="editor-dropdown-content mt-1 min-w-[180px]">
           {/* Horizontal Rule */}
           <button
             type="button"
             className="editor-dropdown-item w-full"
             onClick={insertHorizontalRule}
           >
-            <Minus className="h-4 w-4 mr-2" />
+            <SeparatorHorizontal className="h-4 w-4 mr-2" />
             <span>Horizontal Rule</span>
           </button>
 
-          {/* Table with submenu */}
-          <div className="relative">
-            <button
-              type="button"
-              className="editor-dropdown-item w-full justify-between"
-              onClick={() => setShowTablePicker(!showTablePicker)}
-            >
-              <span className="flex items-center">
-                <Table className="h-4 w-4 mr-2" />
-                <span>Table</span>
-              </span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
-            {showTablePicker && (
-              <div className="editor-dropdown-content absolute left-full top-0 ml-1 p-2">
-                <TableSizePicker onSelect={insertTable} />
-              </div>
-            )}
-          </div>
+          {/* Table */}
+          <button
+            type="button"
+            className="editor-dropdown-item w-full"
+            onClick={() => setActiveSubmenu(activeSubmenu === 'table' ? null : 'table')}
+          >
+            <Table className="h-4 w-4 mr-2" />
+            <span>Table</span>
+          </button>
+          {activeSubmenu === 'table' && (
+            <div className="px-2 py-2 border-t border-border">
+              <TableSizePicker onSelect={insertTable} />
+            </div>
+          )}
 
-          {/* Columns Layout with submenu */}
-          <div className="relative">
-            <button
-              type="button"
-              className="editor-dropdown-item w-full justify-between"
-              onClick={() => setShowLayoutPicker(!showLayoutPicker)}
-            >
-              <span className="flex items-center">
-                <Columns className="h-4 w-4 mr-2" />
-                <span>Columns Layout</span>
-              </span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
-            {showLayoutPicker && (
-              <div className="editor-dropdown-content absolute left-full top-0 ml-1 p-2 min-w-[160px]">
-                <LayoutPicker onSelect={insertLayout} />
-              </div>
-            )}
-          </div>
+          {/* Columns Layout */}
+          <button
+            type="button"
+            className="editor-dropdown-item w-full"
+            onClick={() => setActiveSubmenu(activeSubmenu === 'columns' ? null : 'columns')}
+          >
+            <Columns className="h-4 w-4 mr-2" />
+            <span>Columns Layout</span>
+          </button>
+          {activeSubmenu === 'columns' && (
+            <div className="px-2 py-2 border-t border-border">
+              <LayoutPicker onSelect={insertLayout} />
+            </div>
+          )}
 
           {/* Collapsible */}
           <button
@@ -161,7 +133,7 @@ export function InsertDropdown({ className }: InsertDropdownProps) {
             className="editor-dropdown-item w-full"
             onClick={insertCollapsible}
           >
-            <ChevronRight className="h-4 w-4 mr-2" />
+            <FoldVertical className="h-4 w-4 mr-2" />
             <span>Collapsible</span>
           </button>
         </div>
