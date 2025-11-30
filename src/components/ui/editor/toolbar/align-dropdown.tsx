@@ -62,6 +62,8 @@ const defaultAlignments: AlignDropdownProps['alignments'] = [
   'center',
   'right',
   'justify',
+  'start',
+  'end',
   'outdent',
   'indent',
 ]

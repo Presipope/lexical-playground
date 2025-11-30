@@ -136,30 +136,34 @@ function FloatingLinkEditor({
       const node = getSelectedNode(selection)
       const linkParent = $findMatchingParent(node, $isLinkNode)
 
+      let currentUrl = ''
       if (linkParent) {
-        setLinkUrl(linkParent.getURL())
+        currentUrl = linkParent.getURL()
       } else if ($isLinkNode(node)) {
-        setLinkUrl(node.getURL())
-      } else {
-        setLinkUrl('')
+        currentUrl = node.getURL()
       }
-      if (isLinkEditMode) {
-        setEditedLinkUrl(linkUrl)
+      setLinkUrl(currentUrl)
+
+      // When entering edit mode, set the editedLinkUrl to the current link URL
+      if (isLinkEditMode && currentUrl) {
+        setEditedLinkUrl(currentUrl)
       }
     } else if ($isNodeSelection(selection)) {
       const nodes = selection.getNodes()
       if (nodes.length > 0) {
         const node = nodes[0]
         const parent = node.getParent()
+        let currentUrl = ''
         if ($isLinkNode(parent)) {
-          setLinkUrl(parent.getURL())
+          currentUrl = parent.getURL()
         } else if ($isLinkNode(node)) {
-          setLinkUrl(node.getURL())
-        } else {
-          setLinkUrl('')
+          currentUrl = node.getURL()
         }
-        if (isLinkEditMode) {
-          setEditedLinkUrl(linkUrl)
+        setLinkUrl(currentUrl)
+
+        // When entering edit mode, set the editedLinkUrl to the current link URL
+        if (isLinkEditMode && currentUrl) {
+          setEditedLinkUrl(currentUrl)
         }
       }
     }
@@ -208,7 +212,7 @@ function FloatingLinkEditor({
     }
 
     return true
-  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, linkUrl, isLink])
+  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, isLink])
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement
@@ -271,8 +275,21 @@ function FloatingLinkEditor({
   }, [editor, $updateLinkEditor])
 
   useEffect(() => {
-    if (isLinkEditMode && inputRef.current) {
-      inputRef.current.focus()
+    // Focus the input when entering edit mode
+    // Use a small delay to ensure the DOM has updated and the input is visible
+    if (isLinkEditMode && isLink) {
+      const timeoutId = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus()
+          // Select the text after the protocol for easy replacement
+          const value = inputRef.current.value
+          if (value.startsWith('https://') || value.startsWith('http://')) {
+            const protocolEnd = value.indexOf('://') + 3
+            inputRef.current.setSelectionRange(protocolEnd, value.length)
+          }
+        }
+      }, 0)
+      return () => clearTimeout(timeoutId)
     }
   }, [isLinkEditMode, isLink])
 
