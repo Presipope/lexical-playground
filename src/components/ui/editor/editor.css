@@ -1253,7 +1253,7 @@
 
 .draggable-block-target-line {
   pointer-events: none;
-  background: hsl(var(--primary));
+  background: deepskyblue;
   height: 4px;
   position: absolute;
   left: 0;
@@ -1261,4 +1261,5 @@
   opacity: 0;
   will-change: transform;
   border-radius: 2px;
+  z-index: 100;
 }
