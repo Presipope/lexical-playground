@@ -13,7 +13,6 @@ import {
   COMMAND_PRIORITY_CRITICAL,
   ElementFormatType,
 } from 'lexical'
-import { $isParentElementRTL, $getSelectionStyleValueForProperty } from '@lexical/selection'
 import { $findMatchingParent, mergeRegister } from '@lexical/utils'
 import {
   AlignLeft,
@@ -75,16 +74,11 @@ export function AlignDropdown({
   const [isOpen, setIsOpen] = useState(false)
   const [elementFormat, setElementFormat] = useState<ElementFormatType>('left')
   const [isEditable, setIsEditable] = useState(() => editor.isEditable())
-  const [isRTL, setIsRTL] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const updateToolbar = useCallback(() => {
+  const $updateToolbar = useCallback(() => {
     const selection = $getSelection()
     if ($isRangeSelection(selection) || $isNodeSelection(selection)) {
-      if ($isRangeSelection(selection)) {
-        setIsRTL($isParentElementRTL(selection))
-      }
-
       // Get the element format from the selection
       if ($isRangeSelection(selection)) {
         const anchorNode = selection.anchor.getNode()
@@ -99,10 +93,10 @@ export function AlignDropdown({
           element = anchorNode.getTopLevelElementOrThrow()
         }
 
-        const elementFormat = ('getFormatType' in element)
+        const format = ('getFormatType' in element)
           ? (element as any).getFormatType()
           : 'left'
-        setElementFormat(elementFormat || 'left')
+        setElementFormat(format || 'left')
       }
     }
   }, [])
@@ -115,18 +109,18 @@ export function AlignDropdown({
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         () => {
-          updateToolbar()
+          $updateToolbar()
           return false
         },
         COMMAND_PRIORITY_CRITICAL
       ),
-      editor.registerUpdateListener(({ editorState }) => {
-        editorState.read(() => {
-          updateToolbar()
+      editor.registerUpdateListener(() => {
+        editor.read(() => {
+          $updateToolbar()
         })
       })
     )
-  }, [editor, updateToolbar])
+  }, [editor, $updateToolbar])
 
   // Close dropdown when clicking outside
   useEffect(() => {
