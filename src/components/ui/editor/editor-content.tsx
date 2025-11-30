@@ -19,7 +19,7 @@ import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin'
 import { useLexicalEditable } from '@lexical/react/useLexicalEditable'
 import { CAN_USE_DOM } from '@lexical/utils'
 
-import { useSharedHistory, useActiveEditor, useEditorConfig, useToolbarState } from './lib/context'
+import { useSharedHistory, useActiveEditor, useEditorConfig, useToolbarState, useFormConfig } from './lib/context'
 import { FloatingLinkEditorPlugin } from './plugins/floating-link-editor'
 import { FloatingTextFormatToolbarPlugin } from './plugins/floating-text-format-toolbar'
 import { DraggableBlockPlugin } from './plugins/draggable-block-plugin'
@@ -240,9 +240,26 @@ export function EditorContent({
   const { setActiveEditor } = useActiveEditor()
   const { isLinkEditMode, setIsLinkEditMode } = useToolbarState()
   const config = useEditorConfig()
+  const formConfig = useFormConfig()
   const isEditable = useLexicalEditable()
 
   const placeholder = placeholderProp ?? config.placeholder ?? 'Start writing...'
+
+  // Build accessibility props for the ContentEditable
+  const contentEditableProps: Record<string, unknown> = {
+    className: 'editor-input',
+  }
+
+  // Add form-related accessibility attributes
+  if (formConfig.id) contentEditableProps.id = formConfig.id
+  if (formConfig.name) contentEditableProps['data-name'] = formConfig.name
+  if (formConfig['aria-label']) contentEditableProps['aria-label'] = formConfig['aria-label']
+  if (formConfig['aria-labelledby']) contentEditableProps['aria-labelledby'] = formConfig['aria-labelledby']
+  if (formConfig['aria-describedby']) contentEditableProps['aria-describedby'] = formConfig['aria-describedby']
+  if (formConfig['aria-invalid']) contentEditableProps['aria-invalid'] = formConfig['aria-invalid']
+  if (formConfig['aria-required']) contentEditableProps['aria-required'] = formConfig['aria-required']
+  if (formConfig.required) contentEditableProps['aria-required'] = true
+  if (formConfig.disabled) contentEditableProps['aria-disabled'] = true
 
   // Resolve plugin configuration
   const pluginConfig: Required<PluginConfig> = plugins === 'all'
@@ -291,7 +308,7 @@ export function EditorContent({
           contentEditable={
             <div className="editor-scroller">
               <div className="editor-input-wrapper" ref={onRef}>
-                <ContentEditable className="editor-input" />
+                <ContentEditable {...contentEditableProps} />
               </div>
             </div>
           }

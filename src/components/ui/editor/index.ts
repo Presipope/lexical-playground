@@ -77,20 +77,31 @@ export type {
 
 // Individual plugins for custom editor composition
 export {
+  // Form integration
+  OnChangePlugin,
+  // Collapsible
   CollapsiblePlugin,
   INSERT_COLLAPSIBLE_COMMAND,
+  // Draggable
   DraggableBlockPlugin,
+  // Emoji
   EmojiPickerPlugin,
+  // Floating editors
   FloatingLinkEditorPlugin,
   FloatingTextFormatToolbarPlugin,
+  // Keyboard shortcuts
   KeyboardShortcutsPlugin,
+  // Layout
   LayoutPlugin,
   INSERT_LAYOUT_COMMAND,
   UPDATE_LAYOUT_COMMAND,
+  // Table plugins
   TableActionMenuPlugin,
   TableCellResizerPlugin,
   TableHoverActionsPlugin,
 } from './plugins'
+
+export type { OnChangePluginProps, EditorOutputFormat } from './plugins'
 
 // =============================================================================
 // NODES
@@ -132,7 +143,10 @@ export {
   useActiveEditor,
   useModal,
   useFlashMessage,
+  useFormConfig,
 } from './lib/context'
+
+export type { FormConfig } from './lib/context'
 
 // =============================================================================
 // UTILITY HOOKS
@@ -143,6 +157,13 @@ export {
   useTextFormat,
   useEditor,
   useCommandListener,
+  useEditorValue,
+} from './lib/use-editor-command'
+
+export type {
+  EditorValueFormat,
+  UseEditorValueOptions,
+  UseEditorValueResult,
 } from './lib/use-editor-command'
 
 // =============================================================================

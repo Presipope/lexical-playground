@@ -1,15 +1,18 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
+  $getRoot,
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_CRITICAL,
   FORMAT_TEXT_COMMAND,
   LexicalCommand,
   SELECTION_CHANGE_COMMAND,
+  EditorState,
 } from 'lexical'
+import { $generateHtmlFromNodes } from '@lexical/html'
 import { mergeRegister } from '@lexical/utils'
 
 /**
@@ -183,4 +186,185 @@ export function useCommandListener<T>(
   useEffect(() => {
     return editor.registerCommand(command, handler, priority)
   }, [editor, command, handler, priority])
+}
+
+export type EditorValueFormat = 'json' | 'html' | 'text'
+
+export interface UseEditorValueOptions {
+  /**
+   * Output format for the value
+   * @default 'json'
+   */
+  format?: EditorValueFormat
+  /**
+   * Whether to include selection-only changes in updates
+   * @default false
+   */
+  includeSelectionChanges?: boolean
+}
+
+export interface UseEditorValueResult {
+  /**
+   * Current value in the specified format
+   */
+  value: string
+  /**
+   * The raw Lexical EditorState
+   */
+  editorState: EditorState
+  /**
+   * Set the editor content programmatically
+   */
+  setValue: (value: string) => void
+  /**
+   * Clear the editor content
+   */
+  clear: () => void
+  /**
+   * Check if the editor is empty (only whitespace or no content)
+   */
+  isEmpty: boolean
+  /**
+   * Get value in a specific format on-demand
+   */
+  getValueAs: (format: EditorValueFormat) => string
+}
+
+/**
+ * Hook for getting and setting the editor's value programmatically.
+ * Useful for form integrations or when you need direct access to the editor content.
+ *
+ * @param options - Configuration options
+ * @returns Object with value, setValue, clear, isEmpty, and getValueAs
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const { value, setValue, isEmpty, clear } = useEditorValue({ format: 'json' })
+ *
+ *   const handleSubmit = () => {
+ *     if (isEmpty) {
+ *       alert('Please enter some content')
+ *       return
+ *     }
+ *     submitToServer(value)
+ *   }
+ *
+ *   return (
+ *     <>
+ *       <EditorContent />
+ *       <button onClick={handleSubmit}>Submit</button>
+ *       <button onClick={clear}>Clear</button>
+ *     </>
+ *   )
+ * }
+ * ```
+ */
+export function useEditorValue(options: UseEditorValueOptions = {}): UseEditorValueResult {
+  const { format = 'json', includeSelectionChanges = false } = options
+  const [editor] = useLexicalComposerContext()
+  const [editorState, setEditorState] = useState<EditorState>(() => editor.getEditorState())
+  const [isEmpty, setIsEmpty] = useState(() => {
+    let empty = true
+    editor.getEditorState().read(() => {
+      const root = $getRoot()
+      empty = root.getTextContent().trim() === ''
+    })
+    return empty
+  })
+
+  // Subscribe to editor updates
+  useEffect(() => {
+    return editor.registerUpdateListener(({ editorState, dirtyElements, dirtyLeaves }) => {
+      // Skip selection-only changes unless configured otherwise
+      if (!includeSelectionChanges && dirtyElements.size === 0 && dirtyLeaves.size === 0) {
+        return
+      }
+
+      setEditorState(editorState)
+
+      // Update isEmpty
+      editorState.read(() => {
+        const root = $getRoot()
+        setIsEmpty(root.getTextContent().trim() === '')
+      })
+    })
+  }, [editor, includeSelectionChanges])
+
+  // Get value in specified format
+  const getValueAs = useCallback(
+    (outputFormat: EditorValueFormat): string => {
+      let content = ''
+      editorState.read(() => {
+        switch (outputFormat) {
+          case 'html':
+            content = $generateHtmlFromNodes(editor)
+            break
+          case 'text':
+            content = $getRoot().getTextContent()
+            break
+          case 'json':
+          default:
+            content = JSON.stringify(editorState.toJSON())
+            break
+        }
+      })
+      return content
+    },
+    [editor, editorState]
+  )
+
+  // Current value in the configured format
+  const value = useMemo(() => getValueAs(format), [getValueAs, format])
+
+  // Set value programmatically
+  const setValue = useCallback(
+    (newValue: string) => {
+      if (!newValue || newValue === '') {
+        editor.update(() => {
+          $getRoot().clear()
+        })
+        return
+      }
+
+      // Try JSON first
+      try {
+        const parsed = JSON.parse(newValue)
+        if (parsed && typeof parsed === 'object' && parsed.root) {
+          const newEditorState = editor.parseEditorState(parsed)
+          editor.setEditorState(newEditorState)
+          return
+        }
+      } catch {
+        // Not JSON
+      }
+
+      // Fallback to setting as plain text
+      editor.update(() => {
+        const root = $getRoot()
+        root.clear()
+        const selection = $getSelection()
+        if (selection) {
+          selection.insertText(newValue)
+        }
+      })
+    },
+    [editor]
+  )
+
+  // Clear the editor
+  const clear = useCallback(() => {
+    editor.update(() => {
+      $getRoot().clear()
+    })
+  }, [editor])
+
+  return {
+    value,
+    editorState,
+    setValue,
+    clear,
+    isEmpty,
+    getValueAs,
+  }
 }
