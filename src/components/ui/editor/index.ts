@@ -171,3 +171,11 @@ export type {
 // =============================================================================
 
 export { editorTheme } from './lib/theme'
+
+// =============================================================================
+// DISPLAY COMPONENT
+// =============================================================================
+
+// Read-only display for serialized rich text content
+export { RichTextDisplay, defaultDisplayTheme } from './rich-text-display'
+export type { RichTextDisplayProps, DisplayTheme } from './rich-text-display'

@@ -1357,3 +1357,319 @@ If you're using the full `<Editor />` component and want to customize:
   <EditorContent />
 </EditorRoot>
 ```
+
+---
+
+## Displaying Rich Text Content
+
+The `RichTextDisplay` component renders serialized editor content as read-only HTML. This is perfect for displaying content saved from the editor in places like:
+
+- Blog post pages
+- Comment displays
+- Email previews
+- Content previews
+- Read-only views
+
+### Basic Usage
+
+```tsx
+import { RichTextDisplay } from '@/components/ui/editor'
+
+function BlogPost({ content }: { content: string }) {
+  return (
+    <article>
+      <RichTextDisplay value={content} />
+    </article>
+  )
+}
+```
+
+### With Placeholder for Empty Content
+
+```tsx
+<RichTextDisplay
+  value={content}
+  placeholder={
+    <p className="text-muted-foreground italic">No content available</p>
+  }
+/>
+```
+
+### Link Handling
+
+Control how links behave in the displayed content:
+
+```tsx
+// Open all links in new tab with security attributes
+<RichTextDisplay
+  value={content}
+  linkTarget="_blank"
+  linkRel="noopener noreferrer"
+/>
+
+// Custom click handler for analytics
+<RichTextDisplay
+  value={content}
+  onLinkClick={(url, event) => {
+    analytics.track('link_click', { url })
+    // Return false to prevent navigation
+    // return false
+  }}
+/>
+
+// Disable links entirely (render as plain text)
+<RichTextDisplay
+  value={content}
+  disableLinks
+/>
+```
+
+### Content Truncation
+
+Perfect for previews and summaries:
+
+```tsx
+function ContentPreview({ content }: { content: string }) {
+  const [expanded, setExpanded] = useState(false)
+
+  if (expanded) {
+    return <RichTextDisplay value={content} />
+  }
+
+  return (
+    <RichTextDisplay
+      value={content}
+      maxLength={200}
+      ellipsis="..."
+      onShowMore={() => setExpanded(true)}
+      showMoreLabel="Read more"
+    />
+  )
+}
+```
+
+### Interactive Checklists
+
+Allow users to interact with checklist items:
+
+```tsx
+function TaskList({ content, onUpdate }: Props) {
+  const handleChecklistChange = (index: number, checked: boolean) => {
+    // Update the content in your database
+    onUpdate(index, checked)
+  }
+
+  return (
+    <RichTextDisplay
+      value={content}
+      checklistInteractive
+      onChecklistChange={handleChecklistChange}
+    />
+  )
+}
+```
+
+### Custom Theming
+
+Override default styles with your own theme:
+
+```tsx
+import { RichTextDisplay, defaultDisplayTheme } from '@/components/ui/editor'
+
+const customTheme = {
+  ...defaultDisplayTheme,
+  paragraph: 'mb-4 leading-relaxed',
+  heading: {
+    h1: 'text-4xl font-black mb-6',
+    h2: 'text-3xl font-bold mb-4',
+    h3: 'text-2xl font-semibold mb-3',
+  },
+  quote: 'border-l-4 border-primary pl-6 italic my-6',
+  link: 'text-primary underline hover:no-underline',
+}
+
+<RichTextDisplay value={content} theme={customTheme} />
+```
+
+### Custom Node Rendering
+
+Extend the renderer with custom node handlers:
+
+```tsx
+<RichTextDisplay
+  value={content}
+  renderNode={(node, defaultRender) => {
+    // Custom rendering for mentions
+    if (node.type === 'mention') {
+      return (
+        <a href={`/users/${node.mentionName}`} className="text-primary">
+          @{node.mentionName}
+        </a>
+      )
+    }
+
+    // Custom rendering for hashtags
+    if (node.type === 'hashtag') {
+      return (
+        <a href={`/tags/${node.text.slice(1)}`} className="text-blue-500">
+          {node.text}
+        </a>
+      )
+    }
+
+    // Use default rendering for all other nodes
+    return null
+  }}
+/>
+```
+
+### Collapsible Sections
+
+Control how collapsible sections behave:
+
+```tsx
+// All collapsibles start expanded
+<RichTextDisplay value={content} collapsibleDefaultOpen />
+
+// All collapsibles start collapsed
+<RichTextDisplay value={content} collapsibleDefaultOpen={false} />
+
+// Use saved state from content (default behavior)
+<RichTextDisplay value={content} />
+```
+
+### Props Reference
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string \| object \| null` | - | Serialized editor state (JSON string or parsed object) |
+| `className` | `string` | - | Additional CSS classes for root container |
+| `theme` | `Partial<DisplayTheme>` | `defaultDisplayTheme` | Theme configuration for styling |
+| `placeholder` | `ReactNode` | - | Content to show when value is empty |
+| `linkTarget` | `'_blank' \| '_self' \| '_parent' \| '_top'` | - | Target attribute for links |
+| `linkRel` | `string` | `'noopener noreferrer'` (for _blank) | Rel attribute for links |
+| `onLinkClick` | `(url, event) => void \| boolean` | - | Custom link click handler |
+| `disableLinks` | `boolean` | `false` | Render links as plain text |
+| `maxLength` | `number` | - | Maximum characters before truncation |
+| `ellipsis` | `ReactNode` | `'...'` | Content shown when truncated |
+| `onShowMore` | `() => void` | - | Callback when "show more" is clicked |
+| `showMoreLabel` | `ReactNode` | `'Show more'` | Label for show more button |
+| `checklistInteractive` | `boolean` | `false` | Allow checkbox interaction |
+| `onChecklistChange` | `(index, checked) => void` | - | Callback when checkbox toggled |
+| `renderNode` | `(node, defaultRender) => ReactNode` | - | Custom node renderer |
+| `collapsibleDefaultOpen` | `boolean` | - | Override collapsible open state |
+| `id` | `string` | - | ID for root element |
+| `data-testid` | `string` | - | Test ID for testing |
+
+### Supported Node Types
+
+RichTextDisplay supports all standard Lexical node types:
+
+| Node Type | Rendered As |
+|-----------|-------------|
+| `paragraph` | `<p>` |
+| `heading` | `<h1>` - `<h6>` |
+| `quote` | `<blockquote>` |
+| `list` | `<ul>` or `<ol>` |
+| `listitem` | `<li>` with optional checkbox |
+| `link` / `autolink` | `<a>` |
+| `text` | `<span>` with formatting |
+| `code` | `<pre><code>` |
+| `code-highlight` | `<span>` with syntax highlighting |
+| `table` | `<table>` |
+| `tablerow` | `<tr>` |
+| `tablecell` | `<td>` or `<th>` |
+| `horizontalrule` | `<hr>` |
+| `collapsible-container` | `<details>` |
+| `collapsible-title` | `<summary>` |
+| `collapsible-content` | `<div>` |
+| `layout-container` | CSS Grid `<div>` |
+| `layout-item` | `<div>` |
+| `mention` | `<span>` with @ prefix |
+| `hashtag` | `<span>` |
+| `linebreak` | `<br>` |
+
+### Text Formatting
+
+All text formatting is preserved:
+
+- **Bold** - `font-bold`
+- *Italic* - `italic`
+- Underline - `underline`
+- ~~Strikethrough~~ - `line-through`
+- `Code` - `bg-muted font-mono`
+- Subscript - smaller, below baseline
+- Superscript - smaller, above baseline
+- ==Highlight== - yellow background
+
+### Example: Blog Post Display
+
+```tsx
+import { RichTextDisplay } from '@/components/ui/editor'
+
+interface BlogPost {
+  title: string
+  content: string
+  author: string
+  publishedAt: Date
+}
+
+function BlogPostPage({ post }: { post: BlogPost }) {
+  return (
+    <article className="max-w-2xl mx-auto py-8">
+      <header className="mb-8">
+        <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
+        <p className="text-muted-foreground">
+          By {post.author} on {post.publishedAt.toLocaleDateString()}
+        </p>
+      </header>
+
+      <RichTextDisplay
+        value={post.content}
+        className="prose dark:prose-invert"
+        linkTarget="_blank"
+        theme={{
+          paragraph: 'mb-4 leading-relaxed',
+          heading: {
+            h1: 'text-3xl font-bold mt-8 mb-4',
+            h2: 'text-2xl font-semibold mt-6 mb-3',
+            h3: 'text-xl font-medium mt-4 mb-2',
+          },
+        }}
+      />
+    </article>
+  )
+}
+```
+
+### Example: Comment Preview with Truncation
+
+```tsx
+import { useState } from 'react'
+import { RichTextDisplay } from '@/components/ui/editor'
+
+function CommentPreview({ content }: { content: string }) {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <div className="border rounded-lg p-4">
+      <RichTextDisplay
+        value={content}
+        maxLength={expanded ? undefined : 150}
+        ellipsis={expanded ? undefined : '...'}
+        onShowMore={expanded ? undefined : () => setExpanded(true)}
+        showMoreLabel="Show full comment"
+        disableLinks={!expanded} // Only enable links when expanded
+      />
+      {expanded && (
+        <button
+          onClick={() => setExpanded(false)}
+          className="text-sm text-muted-foreground mt-2"
+        >
+          Show less
+        </button>
+      )}
+    </div>
+  )
+}
+```
