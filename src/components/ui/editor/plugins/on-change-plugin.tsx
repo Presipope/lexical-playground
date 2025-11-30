@@ -101,7 +101,8 @@ export function OnChangePlugin({
 }: OnChangePluginProps) {
   const [editor] = useLexicalComposerContext()
   const isInternalUpdate = useRef(false)
-  const prevValue = useRef<string | undefined>(value)
+  // Initialize to undefined so the first render with a value actually loads it
+  const prevValue = useRef<string | undefined>(undefined)
 
   // Helper to get content in the specified format
   const getContent = useCallback(
