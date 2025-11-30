@@ -174,10 +174,6 @@
     {
       "path": "ui/editor/lib/use-debounce.ts",
       "type": "registry:ui"
-    },
-    {
-      "path": "ui/editor/plugins/block-delete-plugin.tsx",
-      "type": "registry:ui"
     }
   ],
   "cssVars": {

@@ -30,7 +30,6 @@ import { LayoutPlugin } from './plugins/layout-plugin'
 import { TableActionMenuPlugin } from './plugins/table-action-menu-plugin'
 import { TableCellResizerPlugin } from './plugins/table-cell-resizer-plugin'
 import { TableHoverActionsPlugin } from './plugins/table-hover-actions-plugin'
-import { BlockDeletePlugin } from './plugins/block-delete-plugin'
 
 export interface EditorContentProps {
   /**
@@ -167,11 +166,6 @@ export function EditorContent({
       {/* Draggable block plugin - hidden on small viewports */}
       {floatingAnchorElem && !isSmallViewport && (
         <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-      )}
-
-      {/* Block delete button for HR, Table, Collapsible, Layout */}
-      {floatingAnchorElem && (
-        <BlockDeletePlugin anchorElem={floatingAnchorElem} />
       )}
 
       {/* Optional plugins */}
