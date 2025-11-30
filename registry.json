@@ -1,0 +1,97 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "lexical-editor",
+  "type": "registry:ui",
+  "description": "A composable rich text editor built with Lexical and styled with Tailwind CSS",
+  "dependencies": [
+    "lexical",
+    "@lexical/react",
+    "@lexical/code",
+    "@lexical/hashtag",
+    "@lexical/link",
+    "@lexical/list",
+    "@lexical/overflow",
+    "@lexical/rich-text",
+    "@lexical/table",
+    "@lexical/utils",
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/editor/index.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor-root.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor-content.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor-toolbar.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor.css",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/context.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/theme.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/index.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/history-buttons.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/format-buttons.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/block-format.tsx",
+      "type": "registry:ui"
+    }
+  ],
+  "cssVars": {
+    "light": {
+      "background": "0 0% 100%",
+      "foreground": "222.2 84% 4.9%",
+      "card": "0 0% 100%",
+      "card-foreground": "222.2 84% 4.9%",
+      "popover": "0 0% 100%",
+      "popover-foreground": "222.2 84% 4.9%",
+      "primary": "222.2 47.4% 11.2%",
+      "primary-foreground": "210 40% 98%",
+      "secondary": "210 40% 96.1%",
+      "secondary-foreground": "222.2 47.4% 11.2%",
+      "muted": "210 40% 96.1%",
+      "muted-foreground": "215.4 16.3% 46.9%",
+      "accent": "210 40% 96.1%",
+      "accent-foreground": "222.2 47.4% 11.2%",
+      "destructive": "0 84.2% 60.2%",
+      "destructive-foreground": "210 40% 98%",
+      "border": "214.3 31.8% 91.4%",
+      "input": "214.3 31.8% 91.4%",
+      "ring": "222.2 84% 4.9%",
+      "radius": "0.5rem"
+    }
+  }
+}
