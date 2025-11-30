@@ -649,6 +649,680 @@ export function BlogEditor() {
 
 ---
 
+## Form Integration
+
+The editor is designed to work seamlessly with form libraries like React Hook Form and TanStack Form, or with your own custom form solution.
+
+### Form Props Reference
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | - | Controlled value (JSON/HTML/text) |
+| `defaultValue` | `string` | - | Uncontrolled initial value |
+| `onChange` | `(value, editorState) => void` | - | Called when content changes |
+| `onBlur` | `(event, value) => void` | - | Called when editor loses focus |
+| `onFocus` | `(event) => void` | - | Called when editor gains focus |
+| `outputFormat` | `'json' \| 'html' \| 'text'` | `'json'` | Format for value callbacks |
+| `disabled` | `boolean` | `false` | Disable the editor |
+| `readOnly` | `boolean` | `false` | Read-only mode (can select/copy) |
+| `required` | `boolean` | `false` | Mark field as required |
+| `name` | `string` | - | Form field name |
+| `id` | `string` | - | ID for label association |
+| `aria-label` | `string` | - | Accessible label |
+| `aria-labelledby` | `string` | - | ID of labeling element |
+| `aria-describedby` | `string` | - | ID of describing element |
+| `aria-invalid` | `boolean` | - | Mark as invalid for validation |
+
+---
+
+### Basic Controlled Usage
+
+```tsx
+import { useState } from 'react'
+import { Editor } from '@/components/ui/editor'
+
+function MyForm() {
+  const [content, setContent] = useState('')
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="editor">Content</label>
+      <Editor
+        id="editor"
+        value={content}
+        onChange={(value) => setContent(value)}
+        placeholder="Write something..."
+      />
+      <button type="submit">Submit</button>
+    </form>
+  )
+}
+```
+
+### Uncontrolled Usage with defaultValue
+
+```tsx
+import { Editor, useEditorValue } from '@/components/ui/editor'
+
+function MyForm() {
+  return (
+    <Editor
+      defaultValue={initialJsonState}
+      placeholder="Start writing..."
+    />
+  )
+}
+```
+
+---
+
+### React Hook Form Integration
+
+#### With Controller (Recommended)
+
+```tsx
+import { useForm, Controller } from 'react-hook-form'
+import { Editor } from '@/components/ui/editor'
+
+interface FormData {
+  title: string
+  content: string
+}
+
+function BlogPostForm() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    defaultValues: {
+      title: '',
+      content: '',
+    },
+  })
+
+  const onSubmit = (data: FormData) => {
+    console.log(data)
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label htmlFor="content">Content</label>
+        <Controller
+          name="content"
+          control={control}
+          rules={{
+            required: 'Content is required',
+            validate: (value) => {
+              // Validate JSON content isn't empty
+              try {
+                const parsed = JSON.parse(value)
+                const text = parsed?.root?.children?.[0]?.children?.[0]?.text
+                return text?.trim() ? true : 'Content cannot be empty'
+              } catch {
+                return true
+              }
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <Editor
+                id="content"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={(e) => field.onBlur()}
+                disabled={isSubmitting}
+                aria-invalid={!!fieldState.error}
+                aria-describedby={fieldState.error ? 'content-error' : undefined}
+                placeholder="Write your blog post..."
+              />
+              {fieldState.error && (
+                <p id="content-error" className="text-destructive text-sm mt-1">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </>
+          )}
+        />
+      </div>
+
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Saving...' : 'Save Post'}
+      </button>
+    </form>
+  )
+}
+```
+
+#### Creating a Reusable EditorField Component
+
+```tsx
+// components/editor-field.tsx
+import { Controller, Control, FieldValues, Path } from 'react-hook-form'
+import { Editor, EditorProps } from '@/components/ui/editor'
+
+interface EditorFieldProps<T extends FieldValues>
+  extends Omit<EditorProps, 'value' | 'onChange' | 'onBlur'> {
+  name: Path<T>
+  control: Control<T>
+  label?: string
+  rules?: Parameters<typeof Controller>[0]['rules']
+}
+
+export function EditorField<T extends FieldValues>({
+  name,
+  control,
+  label,
+  rules,
+  ...editorProps
+}: EditorFieldProps<T>) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      rules={rules}
+      render={({ field, fieldState }) => (
+        <div className="space-y-2">
+          {label && (
+            <label htmlFor={name} className="text-sm font-medium">
+              {label}
+            </label>
+          )}
+          <Editor
+            id={name}
+            value={field.value}
+            onChange={field.onChange}
+            onBlur={(e) => field.onBlur()}
+            aria-invalid={!!fieldState.error}
+            aria-describedby={fieldState.error ? `${name}-error` : undefined}
+            {...editorProps}
+          />
+          {fieldState.error && (
+            <p id={`${name}-error`} className="text-destructive text-sm">
+              {fieldState.error.message}
+            </p>
+          )}
+        </div>
+      )}
+    />
+  )
+}
+
+// Usage
+function MyForm() {
+  const { control, handleSubmit } = useForm()
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <EditorField
+        name="content"
+        control={control}
+        label="Post Content"
+        rules={{ required: 'Content is required' }}
+        placeholder="Write something..."
+      />
+    </form>
+  )
+}
+```
+
+---
+
+### TanStack Form Integration
+
+#### Basic Usage with useForm
+
+```tsx
+import { useForm } from '@tanstack/react-form'
+import { Editor } from '@/components/ui/editor'
+
+function BlogPostForm() {
+  const form = useForm({
+    defaultValues: {
+      title: '',
+      content: '',
+    },
+    onSubmit: async ({ value }) => {
+      console.log(value)
+    },
+  })
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        form.handleSubmit()
+      }}
+    >
+      <form.Field
+        name="content"
+        validators={{
+          onChange: ({ value }) => {
+            if (!value) return 'Content is required'
+            // Check if content is empty (just whitespace)
+            try {
+              const parsed = JSON.parse(value)
+              const hasContent = parsed?.root?.children?.some(
+                (child: any) => child?.children?.some((c: any) => c?.text?.trim())
+              )
+              return hasContent ? undefined : 'Content cannot be empty'
+            } catch {
+              return undefined
+            }
+          },
+        }}
+      >
+        {(field) => (
+          <div className="space-y-2">
+            <label htmlFor="content" className="text-sm font-medium">
+              Content
+            </label>
+            <Editor
+              id="content"
+              name={field.name}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+              onBlur={() => field.handleBlur()}
+              aria-invalid={field.state.meta.errors.length > 0}
+              aria-describedby={
+                field.state.meta.errors.length > 0 ? 'content-error' : undefined
+              }
+              placeholder="Write your blog post..."
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p id="content-error" className="text-destructive text-sm">
+                {field.state.meta.errors.join(', ')}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Subscribe selector={(state) => state.isSubmitting}>
+        {(isSubmitting) => (
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : 'Save Post'}
+          </button>
+        )}
+      </form.Subscribe>
+    </form>
+  )
+}
+```
+
+#### Creating a Reusable TanStack EditorField
+
+```tsx
+// components/tanstack-editor-field.tsx
+'use client'
+
+import { useField, FieldApi } from '@tanstack/react-form'
+import { Editor, EditorProps } from '@/components/ui/editor'
+
+interface TanStackEditorFieldProps
+  extends Omit<EditorProps, 'value' | 'onChange' | 'onBlur' | 'name'> {
+  field: FieldApi<any, any, any, any, string>
+  label?: string
+}
+
+/**
+ * A pre-built editor field for TanStack Form.
+ * Use this inside a form.Field render function.
+ */
+export function TanStackEditorField({
+  field,
+  label,
+  disabled,
+  ...editorProps
+}: TanStackEditorFieldProps) {
+  const hasErrors = field.state.meta.errors.length > 0
+  const errorId = `${field.name}-error`
+
+  return (
+    <div className="space-y-2">
+      {label && (
+        <label htmlFor={field.name} className="text-sm font-medium">
+          {label}
+          {field.options.validators?.onChange && (
+            <span className="text-destructive ml-1">*</span>
+          )}
+        </label>
+      )}
+      <Editor
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        onChange={(value) => field.handleChange(value)}
+        onBlur={() => field.handleBlur()}
+        disabled={disabled}
+        aria-invalid={hasErrors}
+        aria-describedby={hasErrors ? errorId : undefined}
+        {...editorProps}
+      />
+      {hasErrors && (
+        <p id={errorId} className="text-destructive text-sm" role="alert">
+          {field.state.meta.errors.join(', ')}
+        </p>
+      )}
+    </div>
+  )
+}
+
+// Usage with form.Field
+function MyForm() {
+  const form = useForm({
+    defaultValues: { content: '' },
+    onSubmit: async ({ value }) => console.log(value),
+  })
+
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}>
+      <form.Field
+        name="content"
+        validators={{
+          onChange: ({ value }) => (!value ? 'Required' : undefined),
+        }}
+      >
+        {(field) => (
+          <TanStackEditorField
+            field={field}
+            label="Content"
+            placeholder="Write something..."
+          />
+        )}
+      </form.Field>
+    </form>
+  )
+}
+```
+
+#### Standalone Field Component with createFormHook (TanStack Form v1+)
+
+For the newest TanStack Form API, you can create a fully standalone field:
+
+```tsx
+// lib/form.ts
+import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
+import { TanStackEditorField } from '@/components/tanstack-editor-field'
+
+// Create form contexts
+const { fieldContext, formContext, useFieldContext } = createFormHookContexts()
+
+// Create custom useField that includes our editor
+export const { useAppForm, withForm } = createFormHook({
+  fieldContext,
+  formContext,
+  fieldComponents: {
+    Editor: TanStackEditorField,
+  },
+})
+```
+
+```tsx
+// components/tanstack-editor-field.tsx (Updated for standalone usage)
+'use client'
+
+import { useFieldContext } from '@/lib/form'
+import { Editor, EditorProps } from '@/components/ui/editor'
+
+interface EditorFieldProps extends Omit<EditorProps, 'value' | 'onChange' | 'onBlur' | 'name'> {
+  label?: string
+}
+
+export function TanStackEditorField({ label, ...editorProps }: EditorFieldProps) {
+  const field = useFieldContext<string>()
+  const hasErrors = field.state.meta.errors.length > 0
+  const errorId = `${field.name}-error`
+
+  return (
+    <div className="space-y-2">
+      {label && (
+        <label htmlFor={field.name} className="text-sm font-medium">
+          {label}
+        </label>
+      )}
+      <Editor
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        onChange={(value) => field.handleChange(value)}
+        onBlur={() => field.handleBlur()}
+        aria-invalid={hasErrors}
+        aria-describedby={hasErrors ? errorId : undefined}
+        {...editorProps}
+      />
+      {hasErrors && (
+        <p id={errorId} className="text-destructive text-sm" role="alert">
+          {field.state.meta.errors.join(', ')}
+        </p>
+      )}
+    </div>
+  )
+}
+```
+
+```tsx
+// Usage with the custom form hook
+import { useAppForm } from '@/lib/form'
+
+function BlogPostForm() {
+  const form = useAppForm({
+    defaultValues: {
+      title: '',
+      content: '',
+    },
+    onSubmit: async ({ value }) => {
+      await savePost(value)
+    },
+  })
+
+  return (
+    <form.Provider>
+      <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}>
+        <form.Field name="title">
+          {/* Your title input */}
+        </form.Field>
+
+        {/* Use the Editor field component directly */}
+        <form.Field
+          name="content"
+          validators={{
+            onChange: ({ value }) => {
+              if (!value) return 'Content is required'
+              return undefined
+            },
+          }}
+        >
+          <form.FieldComponent.Editor
+            label="Post Content"
+            placeholder="Write your blog post..."
+            showToolbar={true}
+          />
+        </form.Field>
+
+        <form.Subscribe selector={(s) => s.isSubmitting}>
+          {(isSubmitting) => (
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Publish'}
+            </button>
+          )}
+        </form.Subscribe>
+      </form>
+    </form.Provider>
+  )
+}
+```
+
+---
+
+### useEditorValue Hook
+
+For programmatic access to editor content without controlled mode:
+
+```tsx
+import { EditorRoot, EditorContent, useEditorValue } from '@/components/ui/editor'
+
+function SubmitButton() {
+  const { value, isEmpty, clear, getValueAs } = useEditorValue({ format: 'json' })
+
+  const handleSubmit = async () => {
+    if (isEmpty) {
+      alert('Please enter some content')
+      return
+    }
+
+    // Get HTML version for preview
+    const html = getValueAs('html')
+    console.log('HTML:', html)
+
+    // Submit JSON for storage
+    await submitToServer(value)
+    clear()
+  }
+
+  return (
+    <button onClick={handleSubmit} disabled={isEmpty}>
+      Submit
+    </button>
+  )
+}
+
+function MyForm() {
+  return (
+    <EditorRoot>
+      <EditorContent placeholder="Write something..." />
+      <SubmitButton />
+    </EditorRoot>
+  )
+}
+```
+
+### useEditorValue Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `format` | `'json' \| 'html' \| 'text'` | `'json'` | Output format |
+| `includeSelectionChanges` | `boolean` | `false` | Update on selection changes |
+
+### useEditorValue Returns
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `value` | `string` | Current content in specified format |
+| `editorState` | `EditorState` | Raw Lexical EditorState |
+| `setValue` | `(value: string) => void` | Set content programmatically |
+| `clear` | `() => void` | Clear the editor |
+| `isEmpty` | `boolean` | Whether editor is empty |
+| `getValueAs` | `(format) => string` | Get content in specific format |
+
+---
+
+### Disabled and Read-Only States
+
+```tsx
+// Disabled - cannot edit, visually dimmed
+<Editor disabled={isSubmitting} />
+
+// Read-only - cannot edit, but can select/copy
+<Editor readOnly={true} />
+
+// Conditional based on permissions
+<Editor
+  readOnly={!canEdit}
+  disabled={isLoading}
+/>
+```
+
+---
+
+### Output Formats
+
+The editor supports three output formats:
+
+| Format | Description | Use Case |
+|--------|-------------|----------|
+| `'json'` | Lexical JSON state | Storage, full fidelity restoration |
+| `'html'` | HTML string | Preview, email, CMS integration |
+| `'text'` | Plain text | Search indexing, previews |
+
+```tsx
+// Store as JSON, get HTML for preview
+<Editor
+  outputFormat="json"
+  onChange={(json, editorState) => {
+    setFormData(json)
+
+    // Get HTML version on-demand
+    editorState.read(() => {
+      const html = $generateHtmlFromNodes(editor)
+      setPreview(html)
+    })
+  }}
+/>
+```
+
+---
+
+### Validation Helpers
+
+For validating editor content in forms:
+
+```tsx
+// Check if JSON content is empty
+function isEditorEmpty(jsonValue: string): boolean {
+  if (!jsonValue) return true
+  try {
+    const parsed = JSON.parse(jsonValue)
+    const root = parsed?.root
+    if (!root?.children?.length) return true
+
+    // Check if all paragraphs are empty
+    return root.children.every((child: any) => {
+      if (child.type === 'paragraph') {
+        return !child.children?.some((c: any) => c.text?.trim())
+      }
+      return false
+    })
+  } catch {
+    return true
+  }
+}
+
+// Get plain text length for character limits
+function getTextLength(jsonValue: string): number {
+  try {
+    const parsed = JSON.parse(jsonValue)
+    // Traverse and count text
+    let length = 0
+    const traverse = (node: any) => {
+      if (node.text) length += node.text.length
+      if (node.children) node.children.forEach(traverse)
+    }
+    traverse(parsed.root)
+    return length
+  } catch {
+    return 0
+  }
+}
+
+// Usage with React Hook Form
+<Controller
+  name="content"
+  control={control}
+  rules={{
+    validate: {
+      required: (v) => !isEditorEmpty(v) || 'Content is required',
+      maxLength: (v) => getTextLength(v) <= 5000 || 'Content too long',
+    },
+  }}
+  render={/* ... */}
+/>
+```
+
+---
+
 ## Migration from Kitchen Sink
 
 If you're using the full `<Editor />` component and want to customize:
