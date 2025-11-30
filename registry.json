@@ -1,0 +1,203 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "lexical-editor",
+  "type": "registry:ui",
+  "description": "A composable rich text editor built with Lexical and styled with Tailwind CSS",
+  "dependencies": [
+    "lexical",
+    "@lexical/react",
+    "@lexical/code",
+    "@lexical/hashtag",
+    "@lexical/link",
+    "@lexical/list",
+    "@lexical/overflow",
+    "@lexical/rich-text",
+    "@lexical/selection",
+    "@lexical/table",
+    "@lexical/utils",
+    "clsx",
+    "tailwind-merge",
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/editor/index.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor-root.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor-content.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor-toolbar.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/editor.css",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/context.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/theme.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/index.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/history-buttons.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/format-buttons.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/block-format.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/align-dropdown.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/text-format-dropdown.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/environment.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/floating-link-editor.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/floating-text-format-toolbar.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/emoji-picker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/keyboard-shortcuts.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/draggable-block-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/emoji-list.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/ui/color-picker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/font-color-picker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/bg-color-picker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/insert-dropdown.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/index.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-utils.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-container-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-title-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/collapsible-content-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/layout-container-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/nodes/layout-item-node.ts",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/collapsible-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/layout-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/table-action-menu-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/table-cell-resizer-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/plugins/table-hover-actions-plugin.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/use-debounce.ts",
+      "type": "registry:ui"
+    }
+  ],
+  "cssVars": {
+    "light": {
+      "background": "0 0% 100%",
+      "foreground": "222.2 84% 4.9%",
+      "card": "0 0% 100%",
+      "card-foreground": "222.2 84% 4.9%",
+      "popover": "0 0% 100%",
+      "popover-foreground": "222.2 84% 4.9%",
+      "primary": "222.2 47.4% 11.2%",
+      "primary-foreground": "210 40% 98%",
+      "secondary": "210 40% 96.1%",
+      "secondary-foreground": "222.2 47.4% 11.2%",
+      "muted": "210 40% 96.1%",
+      "muted-foreground": "215.4 16.3% 46.9%",
+      "accent": "210 40% 96.1%",
+      "accent-foreground": "222.2 47.4% 11.2%",
+      "destructive": "0 84.2% 60.2%",
+      "destructive-foreground": "210 40% 98%",
+      "border": "214.3 31.8% 91.4%",
+      "input": "214.3 31.8% 91.4%",
+      "ring": "222.2 84% 4.9%",
+      "radius": "0.5rem"
+    }
+  }
+}

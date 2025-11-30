@@ -21,33 +21,24 @@ import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
 } from '@lexical/markdown';
-import {useCollaborationContext} from '@lexical/react/LexicalCollaborationContext';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {mergeRegister} from '@lexical/utils';
-import {CONNECTED_COMMAND, TOGGLE_CONNECT_COMMAND} from '@lexical/yjs';
 import {
   $createTextNode,
   $getRoot,
   $isParagraphNode,
   CLEAR_EDITOR_COMMAND,
   CLEAR_HISTORY_COMMAND,
-  COLLABORATION_TAG,
   COMMAND_PRIORITY_EDITOR,
   HISTORIC_TAG,
 } from 'lexical';
 import {useCallback, useEffect, useState} from 'react';
 
-import {INITIAL_SETTINGS} from '../../appSettings';
 import useFlashMessage from '../../hooks/useFlashMessage';
 import useModal from '../../hooks/useModal';
 import Button from '../../ui/Button';
 import {docFromHash, docToHash} from '../../utils/docSerialization';
 import {PLAYGROUND_TRANSFORMERS} from '../MarkdownTransformers';
-import {
-  SPEECH_TO_TEXT_COMMAND,
-  SUPPORT_SPEECH_RECOGNITION,
-} from '../SpeechToTextPlugin';
-import {SHOW_VERSIONS_COMMAND} from '../VersionsPlugin';
 
 async function sendEditorState(editor: LexicalEditor): Promise<void> {
   const stringifiedEditorState = JSON.stringify(editor.getEditorState());
@@ -97,23 +88,16 @@ async function shareDoc(doc: SerializedDocument): Promise<void> {
 
 export default function ActionsPlugin({
   shouldPreserveNewLinesInMarkdown,
-  useCollabV2,
 }: {
   shouldPreserveNewLinesInMarkdown: boolean;
-  useCollabV2: boolean;
 }): JSX.Element {
   const [editor] = useLexicalComposerContext();
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  const [isSpeechToText, setIsSpeechToText] = useState(false);
-  const [connected, setConnected] = useState(false);
   const [isEditorEmpty, setIsEditorEmpty] = useState(true);
   const [modal, showModal] = useModal();
   const showFlashMessage = useFlashMessage();
-  const {isCollabActive} = useCollaborationContext();
+
   useEffect(() => {
-    if (INITIAL_SETTINGS.isCollab) {
-      return;
-    }
     docFromHash(window.location.hash).then((doc) => {
       if (doc && doc.source === 'Playground') {
         editor.setEditorState(editorStateFromSerializedDocument(editor, doc));
@@ -121,20 +105,12 @@ export default function ActionsPlugin({
       }
     });
   }, [editor]);
+
   useEffect(() => {
     return mergeRegister(
       editor.registerEditableListener((editable) => {
         setIsEditable(editable);
       }),
-      editor.registerCommand<boolean>(
-        CONNECTED_COMMAND,
-        (payload) => {
-          const isConnected = payload;
-          setConnected(isConnected);
-          return false;
-        },
-        COMMAND_PRIORITY_EDITOR,
-      ),
     );
   }, [editor]);
 
@@ -146,8 +122,7 @@ export default function ActionsPlugin({
         if (
           !isEditable &&
           dirtyElements.size > 0 &&
-          !tags.has(HISTORIC_TAG) &&
-          !tags.has(COLLABORATION_TAG)
+          !tags.has(HISTORIC_TAG)
         ) {
           validateEditorState(editor);
         }
@@ -199,23 +174,6 @@ export default function ActionsPlugin({
 
   return (
     <div className="actions">
-      {SUPPORT_SPEECH_RECOGNITION && (
-        <button
-          onClick={() => {
-            editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
-            setIsSpeechToText(!isSpeechToText);
-          }}
-          className={
-            'action-button action-button-mic ' +
-            (isSpeechToText ? 'active' : '')
-          }
-          title="Speech To Text"
-          aria-label={`${
-            isSpeechToText ? 'Enable' : 'Disable'
-          } speech to text`}>
-          <i className="mic" />
-        </button>
-      )}
       <button
         className="action-button import"
         onClick={() => importFile(editor)}
@@ -238,7 +196,6 @@ export default function ActionsPlugin({
       </button>
       <button
         className="action-button share"
-        disabled={isCollabActive || INITIAL_SETTINGS.isCollab}
         onClick={() =>
           shareDoc(
             serializedDocumentFromEditorState(editor.getEditorState(), {
@@ -285,32 +242,6 @@ export default function ActionsPlugin({
         aria-label="Convert from markdown">
         <i className="markdown" />
       </button>
-      {isCollabActive && (
-        <>
-          <button
-            className="action-button connect"
-            onClick={() => {
-              editor.dispatchCommand(TOGGLE_CONNECT_COMMAND, !connected);
-            }}
-            title={`${
-              connected ? 'Disconnect' : 'Connect'
-            } Collaborative Editing`}
-            aria-label={`${
-              connected ? 'Disconnect from' : 'Connect to'
-            } a collaborative editing server`}>
-            <i className={connected ? 'disconnect' : 'connect'} />
-          </button>
-          {useCollabV2 && (
-            <button
-              className="action-button versions"
-              onClick={() => {
-                editor.dispatchCommand(SHOW_VERSIONS_COMMAND, undefined);
-              }}>
-              <i className="versions" />
-            </button>
-          )}
-        </>
-      )}
       {modal}
     </div>
   );

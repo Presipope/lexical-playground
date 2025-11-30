@@ -6,17 +6,15 @@
  *
  */
 
+import tailwindcss from '@tailwindcss/vite';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import react from '@vitejs/plugin-react';
-import {createRequire} from 'node:module';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {defineConfig} from 'vite';
 
-import viteMonorepoResolutionPlugin from '../shared/lexicalMonorepoPlugin';
-import viteCopyEsm from './viteCopyEsm';
-import viteCopyExcalidrawAssets from './viteCopyExcalidrawAssets';
-
-const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => ({
@@ -25,18 +23,14 @@ export default defineConfig(({mode}) => ({
     rollupOptions: {
       input: {
         main: new URL('./index.html', import.meta.url).pathname,
-        split: new URL('./split/index.html', import.meta.url).pathname,
       },
     },
-    ...(mode === 'production' && {
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          toplevel: true,
-        },
-        keep_classnames: true,
-      },
-    }),
+    minify: mode === 'production' ? 'esbuild' : false,
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -45,31 +39,17 @@ export default defineConfig(({mode}) => ({
     },
   },
   plugins: [
-    viteMonorepoResolutionPlugin(),
+    tailwindcss(),
     babel({
       babelHelpers: 'bundled',
       babelrc: false,
       configFile: false,
       exclude: '**/node_modules/**',
       extensions: ['jsx', 'js', 'ts', 'tsx', 'mjs'],
-      plugins: [
-        '@babel/plugin-transform-flow-strip-types',
-        ...(mode !== 'production'
-          ? [
-              [
-                require('../../scripts/error-codes/transform-error-messages'),
-                {
-                  noMinify: true,
-                },
-              ],
-            ]
-          : []),
-      ],
+      plugins: ['@babel/plugin-transform-flow-strip-types'],
       presets: [['@babel/preset-react', {runtime: 'automatic'}]],
     }),
     react(),
-    ...viteCopyExcalidrawAssets(),
-    viteCopyEsm(),
     commonjs({
       // This is required for React 19 (at least 19.0.0-beta-26f2496093-20240514)
       // because @rollup/plugin-commonjs does not analyze it correctly

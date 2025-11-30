@@ -5,10 +5,63 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import {debounce} from 'lodash-es';
-import {useMemo, useRef} from 'react';
+import {useCallback, useEffect, useMemo, useRef} from 'react';
 
-export function useDebounce<T extends (...args: never[]) => void>(
+type DebouncedFunction<T extends (...args: any[]) => void> = {
+  (...args: Parameters<T>): void;
+  cancel: () => void;
+};
+
+function debounce<T extends (...args: any[]) => void>(
+  fn: T,
+  ms: number,
+  options?: {maxWait?: number},
+): DebouncedFunction<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let maxWaitTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  let lastCallTime: number | null = null;
+
+  const cancel = () => {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    if (maxWaitTimeoutId !== null) {
+      clearTimeout(maxWaitTimeoutId);
+      maxWaitTimeoutId = null;
+    }
+    lastCallTime = null;
+  };
+
+  const debouncedFn = ((...args: Parameters<T>) => {
+    const now = Date.now();
+
+    const invokeFunc = () => {
+      cancel();
+      fn(...args);
+    };
+
+    // Clear existing timeout
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+    }
+
+    // Set up maxWait timeout if configured and not already set
+    if (options?.maxWait !== undefined && maxWaitTimeoutId === null) {
+      lastCallTime = now;
+      maxWaitTimeoutId = setTimeout(invokeFunc, options.maxWait);
+    }
+
+    // Set up regular debounce timeout
+    timeoutId = setTimeout(invokeFunc, ms);
+  }) as DebouncedFunction<T>;
+
+  debouncedFn.cancel = cancel;
+
+  return debouncedFn;
+}
+
+export function useDebounce<T extends (...args: any[]) => void>(
   fn: T,
   ms: number,
   maxWait?: number,
@@ -16,7 +69,7 @@ export function useDebounce<T extends (...args: never[]) => void>(
   const funcRef = useRef<T | null>(null);
   funcRef.current = fn;
 
-  return useMemo(
+  const debouncedFn = useMemo(
     () =>
       debounce(
         (...args: Parameters<T>) => {
@@ -25,8 +78,17 @@ export function useDebounce<T extends (...args: never[]) => void>(
           }
         },
         ms,
-        {maxWait},
+        maxWait !== undefined ? {maxWait} : undefined,
       ),
     [ms, maxWait],
   );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      debouncedFn.cancel();
+    };
+  }, [debouncedFn]);
+
+  return debouncedFn;
 }
