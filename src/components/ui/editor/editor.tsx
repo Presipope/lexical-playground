@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { EditorRoot } from './editor-root'
 import { EditorToolbar, ToolbarSeparator } from './editor-toolbar'
 import { EditorContent } from './editor-content'
-import { HistoryButtons, FormatButtons, BlockFormatDropdown, AlignDropdown, TextFormatDropdown } from './toolbar'
+import { HistoryButtons, FormatButtons, BlockFormatDropdown, AlignDropdown, TextFormatDropdown, FontColorPicker, BackgroundColorPicker } from './toolbar'
 
 export interface EditorProps {
   /**
@@ -104,6 +104,9 @@ export function Editor({
           <FormatButtons />
           <ToolbarSeparator />
           <TextFormatDropdown />
+          <ToolbarSeparator />
+          <FontColorPicker />
+          <BackgroundColorPicker />
           <ToolbarSeparator />
           <AlignDropdown />
         </EditorToolbar>

@@ -98,6 +98,18 @@
     {
       "path": "ui/editor/lib/emoji-list.ts",
       "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/ui/color-picker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/font-color-picker.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/toolbar/bg-color-picker.tsx",
+      "type": "registry:ui"
     }
   ],
   "cssVars": {
