@@ -1,6 +1,10 @@
 // Plugin exports for composable editor usage
 // These can be used when building custom editors with EditorContent plugins="minimal"
 
+// Form integration
+export { OnChangePlugin } from './on-change-plugin'
+export type { OnChangePluginProps, EditorOutputFormat } from './on-change-plugin'
+
 // Collapsible
 export { CollapsiblePlugin, INSERT_COLLAPSIBLE_COMMAND } from './collapsible-plugin'
 

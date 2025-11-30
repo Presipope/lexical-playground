@@ -25,6 +25,73 @@ export interface EditorConfig {
   onError?: (error: Error) => void
 }
 
+// ============================================================================
+// Form Context - For form integration and accessibility
+// ============================================================================
+
+export interface FormConfig {
+  /**
+   * Name attribute for form submission
+   */
+  name?: string
+  /**
+   * ID for associating with a label element
+   */
+  id?: string
+  /**
+   * Whether the field is required
+   */
+  required?: boolean
+  /**
+   * Whether the field is disabled (maps to editable=false in Lexical)
+   */
+  disabled?: boolean
+  /**
+   * aria-label for accessibility
+   */
+  'aria-label'?: string
+  /**
+   * aria-labelledby for accessibility
+   */
+  'aria-labelledby'?: string
+  /**
+   * aria-describedby for accessibility - useful for error messages
+   */
+  'aria-describedby'?: string
+  /**
+   * aria-invalid for form validation
+   */
+  'aria-invalid'?: boolean
+  /**
+   * aria-required for accessibility
+   */
+  'aria-required'?: boolean
+  /**
+   * Whether the editor is read-only (content can be selected/copied but not edited)
+   */
+  readOnly?: boolean
+}
+
+const FormContext = createContext<FormConfig>({})
+
+export function FormProvider({
+  children,
+  config,
+}: {
+  children: ReactNode
+  config: FormConfig
+}) {
+  return <FormContext.Provider value={config}>{children}</FormContext.Provider>
+}
+
+/**
+ * Hook to access form configuration within the editor.
+ * Returns form props like name, id, required, disabled, and aria-* attributes.
+ */
+export function useFormConfig() {
+  return useContext(FormContext)
+}
+
 const EditorConfigContext = createContext<EditorConfig | null>(null)
 
 export function EditorConfigProvider({

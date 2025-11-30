@@ -1517,3 +1517,49 @@
 .theme-color-picker-clear:hover {
   background-color: var(--color-accent);
 }
+
+/* ==========================================================================
+   Form Integration - Disabled & Read-only States
+   ========================================================================== */
+
+/* Disabled state */
+.editor-shell.editor-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.editor-shell.editor-disabled .editor-input {
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.editor-shell.editor-disabled .editor-toolbar {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.editor-shell.editor-disabled .editor-toolbar-button,
+.editor-shell.editor-disabled .editor-dropdown-button,
+.editor-shell.editor-disabled .color-picker-trigger {
+  cursor: not-allowed;
+}
+
+/* Read-only state - similar to disabled but without visual dimming */
+.editor-shell[data-readonly] .editor-toolbar {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Focus ring for form accessibility */
+.editor-shell:focus-within:not(.editor-disabled) {
+  box-shadow: 0 0 0 2px var(--color-ring);
+}
+
+/* Invalid state for form validation */
+.editor-shell:has(.editor-input[aria-invalid="true"]) {
+  border-color: var(--color-destructive);
+}
+
+.editor-shell:has(.editor-input[aria-invalid="true"]):focus-within {
+  box-shadow: 0 0 0 2px var(--color-destructive);
+}
