@@ -40,7 +40,7 @@ export interface FormatButtonsProps {
   formats?: Array<'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | 'link' | 'subscript' | 'superscript' | 'highlight'>
 }
 
-const defaultFormats: FormatButtonsProps['formats'] = [
+const defaultFormats: Array<'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | 'link' | 'subscript' | 'superscript' | 'highlight'> = [
   'bold',
   'italic',
   'underline',

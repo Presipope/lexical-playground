@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
-type DebouncedFunction<T extends (...args: never[]) => void> = {
+type DebouncedFunction<T extends (...args: any[]) => void> = {
   (...args: Parameters<T>): void
   cancel: () => void
 }
 
-function debounce<T extends (...args: never[]) => void>(
+function debounce<T extends (...args: any[]) => void>(
   fn: T,
   ms: number,
   options?: { maxWait?: number }
@@ -56,7 +56,7 @@ function debounce<T extends (...args: never[]) => void>(
   return debouncedFn
 }
 
-export function useDebounce<T extends (...args: never[]) => void>(
+export function useDebounce<T extends (...args: any[]) => void>(
   fn: T,
   ms: number,
   maxWait?: number

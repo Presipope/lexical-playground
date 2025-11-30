@@ -77,7 +77,7 @@ export interface AlignDropdownProps {
   alignments?: Array<AlignType | 'outdent' | 'indent'>
 }
 
-const defaultAlignments: AlignDropdownProps['alignments'] = [
+const defaultAlignments: Array<AlignType | 'outdent' | 'indent'> = [
   'left',
   'center',
   'right',

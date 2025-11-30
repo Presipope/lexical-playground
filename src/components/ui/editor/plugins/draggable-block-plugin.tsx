@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, type JSX } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { DraggableBlockPlugin_EXPERIMENTAL } from '@lexical/react/LexicalDraggableBlockPlugin'
 import { $createParagraphNode, $getNearestNodeFromDOMNode } from 'lexical'
