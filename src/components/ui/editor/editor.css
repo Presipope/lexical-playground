@@ -1471,3 +1471,49 @@
     opacity: 1;
   }
 }
+
+/* Theme Color Picker */
+.theme-color-picker {
+  padding: 0.5rem;
+}
+
+.theme-color-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.25rem;
+}
+
+.theme-color-picker-swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s;
+}
+
+.theme-color-picker-swatch:hover {
+  transform: scale(1.1);
+}
+
+.theme-color-picker-swatch.active {
+  box-shadow: 0 0 0 2px var(--color-ring);
+}
+
+.theme-color-picker-clear {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.theme-color-picker-clear:hover {
+  background-color: var(--color-accent);
+}

@@ -6,11 +6,11 @@ import { $getSelection, $isRangeSelection } from 'lexical'
 import { $patchStyleText, $getSelectionStyleValueForProperty } from '@lexical/selection'
 import { mergeRegister } from '@lexical/utils'
 import { ChevronDown, PaintBucket } from 'lucide-react'
-import { ColorPicker } from '../ui/color-picker'
+import { ThemeColorPicker } from '../ui/theme-color-picker'
 
 export function BackgroundColorPicker() {
   const [editor] = useLexicalComposerContext()
-  const [bgColor, setBgColor] = useState('#ffffff')
+  const [bgColor, setBgColor] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -24,9 +24,9 @@ export function BackgroundColorPicker() {
             const color = $getSelectionStyleValueForProperty(
               selection,
               'background-color',
-              '#ffffff'
+              ''
             )
-            setBgColor(color || '#ffffff')
+            setBgColor(color || '')
           }
         })
       })
@@ -51,25 +51,16 @@ export function BackgroundColorPicker() {
   }, [isOpen])
 
   const applyColor = useCallback(
-    (color: string, skipHistoryStack: boolean) => {
-      editor.update(
-        () => {
-          const selection = $getSelection()
-          if ($isRangeSelection(selection)) {
-            $patchStyleText(selection, { 'background-color': color })
-          }
-        },
-        skipHistoryStack ? { tag: 'historic' } : {}
-      )
+    (color: string) => {
+      editor.update(() => {
+        const selection = $getSelection()
+        if ($isRangeSelection(selection)) {
+          $patchStyleText(selection, { 'background-color': color || null })
+        }
+      })
+      setBgColor(color)
     },
     [editor]
-  )
-
-  const onColorChange = useCallback(
-    (color: string, skipHistoryStack: boolean) => {
-      applyColor(color, skipHistoryStack)
-    },
-    [applyColor]
   )
 
   return (
@@ -85,14 +76,20 @@ export function BackgroundColorPicker() {
           <PaintBucket className="h-4 w-4" />
           <span
             className="color-picker-indicator"
-            style={{ backgroundColor: bgColor }}
+            style={{ backgroundColor: bgColor || 'transparent' }}
           />
         </span>
         <ChevronDown className="h-3 w-3" />
       </button>
       {isOpen && (
         <div className="color-picker-dropdown-content">
-          <ColorPicker color={bgColor} onChange={onColorChange} />
+          <ThemeColorPicker
+            color={bgColor}
+            onChange={applyColor}
+            onClose={() => setIsOpen(false)}
+            mode="background"
+            showClearButton={true}
+          />
         </div>
       )}
     </div>

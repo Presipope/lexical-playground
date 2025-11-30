@@ -6,11 +6,11 @@ import { $getSelection, $isRangeSelection } from 'lexical'
 import { $patchStyleText, $getSelectionStyleValueForProperty } from '@lexical/selection'
 import { mergeRegister } from '@lexical/utils'
 import { ChevronDown } from 'lucide-react'
-import { ColorPicker } from '../ui/color-picker'
+import { ThemeColorPicker } from '../ui/theme-color-picker'
 
 export function FontColorPicker() {
   const [editor] = useLexicalComposerContext()
-  const [fontColor, setFontColor] = useState('#000000')
+  const [fontColor, setFontColor] = useState('var(--color-foreground)')
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -21,8 +21,8 @@ export function FontColorPicker() {
         editorState.read(() => {
           const selection = $getSelection()
           if ($isRangeSelection(selection)) {
-            const color = $getSelectionStyleValueForProperty(selection, 'color', '#000000')
-            setFontColor(color)
+            const color = $getSelectionStyleValueForProperty(selection, 'color', '')
+            setFontColor(color || 'var(--color-foreground)')
           }
         })
       })
@@ -47,25 +47,16 @@ export function FontColorPicker() {
   }, [isOpen])
 
   const applyColor = useCallback(
-    (color: string, skipHistoryStack: boolean) => {
-      editor.update(
-        () => {
-          const selection = $getSelection()
-          if ($isRangeSelection(selection)) {
-            $patchStyleText(selection, { color })
-          }
-        },
-        skipHistoryStack ? { tag: 'historic' } : {}
-      )
+    (color: string) => {
+      editor.update(() => {
+        const selection = $getSelection()
+        if ($isRangeSelection(selection)) {
+          $patchStyleText(selection, { color: color || null })
+        }
+      })
+      setFontColor(color || 'var(--color-foreground)')
     },
     [editor]
-  )
-
-  const onColorChange = useCallback(
-    (color: string, skipHistoryStack: boolean) => {
-      applyColor(color, skipHistoryStack)
-    },
-    [applyColor]
   )
 
   return (
@@ -88,7 +79,13 @@ export function FontColorPicker() {
       </button>
       {isOpen && (
         <div className="color-picker-dropdown-content">
-          <ColorPicker color={fontColor} onChange={onColorChange} />
+          <ThemeColorPicker
+            color={fontColor}
+            onChange={applyColor}
+            onClose={() => setIsOpen(false)}
+            mode="text"
+            showClearButton={true}
+          />
         </div>
       )}
     </div>
