@@ -328,7 +328,7 @@ export function FlashMessageProvider({ children }: { children: ReactNode }) {
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`px-4 py-2 rounded-lg shadow-lg text-sm animate-in slide-in-from-right ${
+              className={`px-4 py-2 rounded-theme shadow-lg text-sm animate-in slide-in-from-right ${
                 msg.type === 'success'
                   ? 'bg-green-500 text-white'
                   : msg.type === 'error'

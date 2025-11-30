@@ -10,7 +10,7 @@
 .Collapsible__container {
   background: #fcfcfc;
   border: 1px solid #eee;
-  border-radius: 10px;
+  border-radius: var(--radius);
   margin-bottom: 8px;
 }
 

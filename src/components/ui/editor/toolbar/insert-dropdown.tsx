@@ -168,7 +168,7 @@ function TableSizePicker({ onSelect }: { onSelect: (rows: number, cols: number) 
               key={index}
               type="button"
               className={cn(
-                'w-5 h-5 border rounded-sm transition-colors',
+                'w-5 h-5 border rounded-theme-sm transition-colors',
                 isHighlighted
                   ? 'bg-primary border-primary'
                   : 'bg-background border-border hover:border-primary'
@@ -207,7 +207,7 @@ function LayoutPicker({ onSelect }: { onSelect: (template: string) => void }) {
             {preview.map((width, i) => (
               <div
                 key={i}
-                className="bg-muted-foreground/30 rounded-sm h-full"
+                className="bg-muted-foreground/30 rounded-theme-sm h-full"
                 style={{ width }}
               />
             ))}
