@@ -154,8 +154,17 @@ export function OnChangePlugin({
     // Only handle controlled mode when value is provided
     if (value === undefined) return
 
-    // Skip if value hasn't changed
+    // Skip if value hasn't changed from what we last set
     if (prevValue.current === value) return
+
+    // CRITICAL: Check if current editor state already matches incoming value
+    // This prevents cursor position loss when form state updates after user typing
+    const currentContent = getContent(editor.getEditorState())
+    if (currentContent === value) {
+      prevValue.current = value
+      return // Skip update - editor already has this content
+    }
+
     prevValue.current = value
 
     // Empty value means clear the editor
@@ -224,7 +233,7 @@ export function OnChangePlugin({
       },
       { tag: 'controlled-value-update' }
     )
-  }, [editor, value])
+  }, [editor, value, getContent])
 
   // Handle blur and focus events
   useEffect(() => {
