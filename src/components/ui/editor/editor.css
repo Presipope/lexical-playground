@@ -549,7 +549,7 @@
 
 .editor-dropdown-content {
   position: absolute;
-  z-index: 50;
+  z-index: 200;
   min-width: 8rem;
   overflow: hidden;
   border-radius: 0.375rem;
@@ -1051,7 +1051,7 @@
 
 .color-picker-dropdown-content {
   position: absolute;
-  z-index: 100;
+  z-index: 200;
   top: 100%;
   left: 0;
   margin-top: 0.25rem;

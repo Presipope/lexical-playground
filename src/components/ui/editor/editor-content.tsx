@@ -23,6 +23,7 @@ import { useSharedHistory, useActiveEditor, useEditorConfig, useToolbarState } f
 import { FloatingLinkEditorPlugin } from './plugins/floating-link-editor'
 import { FloatingTextFormatToolbarPlugin } from './plugins/floating-text-format-toolbar'
 import { EmojiPickerPlugin } from './plugins/emoji-picker'
+import { KeyboardShortcutsPlugin } from './plugins/keyboard-shortcuts'
 
 export interface EditorContentProps {
   /**
@@ -135,6 +136,7 @@ export function EditorContent({
       <HashtagPlugin />
       <ClearEditorPlugin />
       <EmojiPickerPlugin />
+      <KeyboardShortcutsPlugin />
 
       {/* Floating link editor */}
       {floatingAnchorElem && (

@@ -96,6 +96,10 @@
       "type": "registry:ui"
     },
     {
+      "path": "ui/editor/plugins/keyboard-shortcuts.tsx",
+      "type": "registry:ui"
+    },
+    {
       "path": "ui/editor/lib/emoji-list.ts",
       "type": "registry:ui"
     },
