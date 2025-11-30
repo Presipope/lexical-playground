@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, ReactNode, createContext, useContext } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
@@ -31,6 +31,132 @@ import { TableActionMenuPlugin } from './plugins/table-action-menu-plugin'
 import { TableCellResizerPlugin } from './plugins/table-cell-resizer-plugin'
 import { TableHoverActionsPlugin } from './plugins/table-hover-actions-plugin'
 
+// ============================================================================
+// ANCHOR CONTEXT - For floating plugins
+// ============================================================================
+
+interface AnchorContextValue {
+  floatingAnchorElem: HTMLDivElement | null
+  isSmallViewport: boolean
+}
+
+const AnchorContext = createContext<AnchorContextValue>({
+  floatingAnchorElem: null,
+  isSmallViewport: false,
+})
+
+/**
+ * Hook to access the floating anchor element for floating plugins.
+ * Must be used within EditorContent.
+ */
+export function useFloatingAnchor() {
+  return useContext(AnchorContext)
+}
+
+// ============================================================================
+// PLUGIN CONFIGURATION
+// ============================================================================
+
+export interface PluginConfig {
+  /**
+   * Enable history (undo/redo)
+   * @default true
+   */
+  history?: boolean
+  /**
+   * Enable lists (bullet, numbered)
+   * @default true
+   */
+  list?: boolean
+  /**
+   * Enable checklists
+   * @default true
+   */
+  checkList?: boolean
+  /**
+   * Enable links
+   * @default true
+   */
+  link?: boolean
+  /**
+   * Enable horizontal rule
+   * @default true
+   */
+  horizontalRule?: boolean
+  /**
+   * Enable tab indentation
+   * @default true
+   */
+  tabIndentation?: boolean
+  /**
+   * Enable hashtags
+   * @default true
+   */
+  hashtag?: boolean
+  /**
+   * Enable emoji picker (type :emoji_name)
+   * @default true
+   */
+  emojiPicker?: boolean
+  /**
+   * Enable keyboard shortcuts
+   * @default true
+   */
+  keyboardShortcuts?: boolean
+  /**
+   * Enable collapsible blocks
+   * @default true
+   */
+  collapsible?: boolean
+  /**
+   * Enable column layouts
+   * @default true
+   */
+  layout?: boolean
+  /**
+   * Enable floating link editor
+   * @default true
+   */
+  floatingLinkEditor?: boolean
+  /**
+   * Enable floating text format toolbar
+   * @default true
+   */
+  floatingTextFormat?: boolean
+  /**
+   * Enable draggable blocks
+   * @default true
+   */
+  draggableBlock?: boolean
+  /**
+   * Enable tables
+   * @default true
+   */
+  table?: boolean
+}
+
+const defaultPluginConfig: Required<PluginConfig> = {
+  history: true,
+  list: true,
+  checkList: true,
+  link: true,
+  horizontalRule: true,
+  tabIndentation: true,
+  hashtag: true,
+  emojiPicker: true,
+  keyboardShortcuts: true,
+  collapsible: true,
+  layout: true,
+  floatingLinkEditor: true,
+  floatingTextFormat: true,
+  draggableBlock: true,
+  table: true,
+}
+
+// ============================================================================
+// EDITOR CONTENT PROPS
+// ============================================================================
+
 export interface EditorContentProps {
   /**
    * Placeholder text when editor is empty
@@ -45,9 +171,16 @@ export interface EditorContentProps {
    */
   className?: string
   /**
-   * Enable table features
+   * Plugin configuration - set to false to use minimal mode (no plugins),
+   * or an object to selectively enable/disable plugins.
+   * @default "all" - all plugins enabled
    */
-  enableTable?: boolean
+  plugins?: 'all' | 'minimal' | PluginConfig
+  /**
+   * Additional plugins/components to render inside the editor.
+   * These will be rendered after the built-in plugins.
+   */
+  children?: ReactNode
   /**
    * Enable horizontal scroll for tables
    */
@@ -70,11 +203,33 @@ function Placeholder({ text }: { text: string }) {
   return <div className="editor-placeholder">{text}</div>
 }
 
+/**
+ * The main content area of the editor.
+ *
+ * @example
+ * ```tsx
+ * // Full-featured (default)
+ * <EditorContent placeholder="Start writing..." />
+ *
+ * // Minimal - no plugins, add your own
+ * <EditorContent plugins="minimal">
+ *   <HistoryPlugin />
+ *   <ListPlugin />
+ *   <MyCustomPlugin />
+ * </EditorContent>
+ *
+ * // Selective plugins
+ * <EditorContent plugins={{ table: false, hashtag: false }}>
+ *   <MyCustomPlugin />
+ * </EditorContent>
+ * ```
+ */
 export function EditorContent({
   placeholder: placeholderProp,
   autoFocus = true,
   className = '',
-  enableTable = true,
+  plugins = 'all',
+  children,
   tableHorizontalScroll = true,
   tableCellMerge = true,
   tableCellBackgroundColor = true,
@@ -88,6 +243,13 @@ export function EditorContent({
   const isEditable = useLexicalEditable()
 
   const placeholder = placeholderProp ?? config.placeholder ?? 'Start writing...'
+
+  // Resolve plugin configuration
+  const pluginConfig: Required<PluginConfig> = plugins === 'all'
+    ? defaultPluginConfig
+    : plugins === 'minimal'
+      ? Object.fromEntries(Object.keys(defaultPluginConfig).map(k => [k, false])) as Required<PluginConfig>
+      : { ...defaultPluginConfig, ...plugins }
 
   // Floating link editor anchor
   const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null)
@@ -117,21 +279,110 @@ export function EditorContent({
     return () => window.removeEventListener('resize', updateViewport)
   }, [])
 
-  return (
-    <div className={`editor-container ${className}`}>
-      <RichTextPlugin
-        contentEditable={
-          <div className="editor-scroller">
-            <div className="editor-input-wrapper" ref={onRef}>
-              <ContentEditable className="editor-input" />
-            </div>
-          </div>
-        }
-        placeholder={<Placeholder text={placeholder} />}
-        ErrorBoundary={LexicalErrorBoundary}
-      />
+  const anchorContextValue: AnchorContextValue = {
+    floatingAnchorElem,
+    isSmallViewport,
+  }
 
-      {/* Core plugins */}
+  return (
+    <AnchorContext.Provider value={anchorContextValue}>
+      <div className={`editor-container ${className}`}>
+        <RichTextPlugin
+          contentEditable={
+            <div className="editor-scroller">
+              <div className="editor-input-wrapper" ref={onRef}>
+                <ContentEditable className="editor-input" />
+              </div>
+            </div>
+          }
+          placeholder={<Placeholder text={placeholder} />}
+          ErrorBoundary={LexicalErrorBoundary}
+        />
+
+        {/* Core plugins - conditionally rendered */}
+        {pluginConfig.history && <HistoryPlugin externalHistoryState={historyState} />}
+        {pluginConfig.list && <ListPlugin />}
+        {pluginConfig.checkList && <CheckListPlugin />}
+        {pluginConfig.link && <LinkPlugin />}
+        {pluginConfig.link && <ClickableLinkPlugin disabled={isEditable} />}
+        {pluginConfig.horizontalRule && <HorizontalRulePlugin />}
+        {pluginConfig.tabIndentation && <TabIndentationPlugin maxIndent={maxIndent} />}
+        {pluginConfig.hashtag && <HashtagPlugin />}
+        <ClearEditorPlugin />
+        {pluginConfig.emojiPicker && <EmojiPickerPlugin />}
+        {pluginConfig.keyboardShortcuts && <KeyboardShortcutsPlugin />}
+        {pluginConfig.collapsible && <CollapsiblePlugin />}
+        {pluginConfig.layout && <LayoutPlugin />}
+
+        {/* Floating plugins */}
+        {pluginConfig.floatingLinkEditor && floatingAnchorElem && (
+          <FloatingLinkEditorPlugin
+            anchorElem={floatingAnchorElem}
+            isLinkEditMode={isLinkEditMode}
+            setIsLinkEditMode={setIsLinkEditMode}
+          />
+        )}
+
+        {pluginConfig.floatingTextFormat && floatingAnchorElem && (
+          <FloatingTextFormatToolbarPlugin
+            anchorElem={floatingAnchorElem}
+            setIsLinkEditMode={setIsLinkEditMode}
+          />
+        )}
+
+        {pluginConfig.draggableBlock && floatingAnchorElem && !isSmallViewport && (
+          <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+        )}
+
+        {/* Auto focus */}
+        {autoFocus && <AutoFocusPlugin />}
+
+        {/* Table plugins */}
+        {pluginConfig.table && (
+          <>
+            <TablePlugin
+              hasCellMerge={tableCellMerge}
+              hasCellBackgroundColor={tableCellBackgroundColor}
+              hasHorizontalScroll={tableHorizontalScroll}
+            />
+            <TableCellResizerPlugin />
+            {floatingAnchorElem && (
+              <>
+                <TableActionMenuPlugin
+                  anchorElem={floatingAnchorElem}
+                  cellMerge={tableCellMerge}
+                />
+                <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
+              </>
+            )}
+          </>
+        )}
+
+        {/* Custom plugins passed as children */}
+        {children}
+      </div>
+    </AnchorContext.Provider>
+  )
+}
+
+// ============================================================================
+// PLUGIN BUNDLES - For composable usage
+// ============================================================================
+
+export interface CorePluginsProps {
+  maxIndent?: number
+}
+
+/**
+ * Core plugins bundle: history, lists, links, horizontal rule, tabs, hashtags.
+ * Use this when building a custom editor with EditorContent plugins="minimal".
+ */
+export function CorePlugins({ maxIndent = 7 }: CorePluginsProps) {
+  const { historyState } = useSharedHistory()
+  const isEditable = useLexicalEditable()
+
+  return (
+    <>
       <HistoryPlugin externalHistoryState={historyState} />
       <ListPlugin />
       <CheckListPlugin />
@@ -141,54 +392,87 @@ export function EditorContent({
       <TabIndentationPlugin maxIndent={maxIndent} />
       <HashtagPlugin />
       <ClearEditorPlugin />
+    </>
+  )
+}
+
+export interface TablePluginsProps {
+  horizontalScroll?: boolean
+  cellMerge?: boolean
+  cellBackgroundColor?: boolean
+}
+
+/**
+ * Table plugins bundle: table, cell resizer, action menu, hover actions.
+ * Use this when building a custom editor with EditorContent plugins="minimal".
+ */
+export function TablePlugins({
+  horizontalScroll = true,
+  cellMerge = true,
+  cellBackgroundColor = true,
+}: TablePluginsProps) {
+  const { floatingAnchorElem } = useFloatingAnchor()
+
+  return (
+    <>
+      <TablePlugin
+        hasCellMerge={cellMerge}
+        hasCellBackgroundColor={cellBackgroundColor}
+        hasHorizontalScroll={horizontalScroll}
+      />
+      <TableCellResizerPlugin />
+      {floatingAnchorElem && (
+        <>
+          <TableActionMenuPlugin
+            anchorElem={floatingAnchorElem}
+            cellMerge={cellMerge}
+          />
+          <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
+        </>
+      )}
+    </>
+  )
+}
+
+/**
+ * Floating UI plugins bundle: link editor, text format toolbar, draggable blocks.
+ * Use this when building a custom editor with EditorContent plugins="minimal".
+ */
+export function FloatingPlugins() {
+  const { floatingAnchorElem, isSmallViewport } = useFloatingAnchor()
+  const { isLinkEditMode, setIsLinkEditMode } = useToolbarState()
+
+  if (!floatingAnchorElem) return null
+
+  return (
+    <>
+      <FloatingLinkEditorPlugin
+        anchorElem={floatingAnchorElem}
+        isLinkEditMode={isLinkEditMode}
+        setIsLinkEditMode={setIsLinkEditMode}
+      />
+      <FloatingTextFormatToolbarPlugin
+        anchorElem={floatingAnchorElem}
+        setIsLinkEditMode={setIsLinkEditMode}
+      />
+      {!isSmallViewport && (
+        <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+      )}
+    </>
+  )
+}
+
+/**
+ * Enhancement plugins bundle: emoji picker, keyboard shortcuts, collapsible, layout.
+ * Use this when building a custom editor with EditorContent plugins="minimal".
+ */
+export function EnhancementPlugins() {
+  return (
+    <>
       <EmojiPickerPlugin />
       <KeyboardShortcutsPlugin />
       <CollapsiblePlugin />
       <LayoutPlugin />
-
-      {/* Floating link editor */}
-      {floatingAnchorElem && (
-        <FloatingLinkEditorPlugin
-          anchorElem={floatingAnchorElem}
-          isLinkEditMode={isLinkEditMode}
-          setIsLinkEditMode={setIsLinkEditMode}
-        />
-      )}
-
-      {/* Floating text format toolbar */}
-      {floatingAnchorElem && (
-        <FloatingTextFormatToolbarPlugin
-          anchorElem={floatingAnchorElem}
-          setIsLinkEditMode={setIsLinkEditMode}
-        />
-      )}
-
-      {/* Draggable block plugin - hidden on small viewports */}
-      {floatingAnchorElem && !isSmallViewport && (
-        <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-      )}
-
-      {/* Optional plugins */}
-      {autoFocus && <AutoFocusPlugin />}
-      {enableTable && (
-        <>
-          <TablePlugin
-            hasCellMerge={tableCellMerge}
-            hasCellBackgroundColor={tableCellBackgroundColor}
-            hasHorizontalScroll={tableHorizontalScroll}
-          />
-          <TableCellResizerPlugin />
-          {floatingAnchorElem && (
-            <>
-              <TableActionMenuPlugin
-                anchorElem={floatingAnchorElem}
-                cellMerge={tableCellMerge}
-              />
-              <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
-            </>
-          )}
-        </>
-      )}
-    </div>
+    </>
   )
 }
