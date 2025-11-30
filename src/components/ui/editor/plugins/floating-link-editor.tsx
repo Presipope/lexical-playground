@@ -207,12 +207,13 @@ function FloatingLinkEditor({
         setFloatingElemPosition(null, editorElem, anchorElem, false)
       }
       setLastSelection(null)
-      setIsLinkEditMode(false)
       setLinkUrl('')
+      // Note: Don't reset isLinkEditMode here - it causes a race condition
+      // when creating new links. The focusout handler takes care of cleanup.
     }
 
     return true
-  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, isLink])
+  }, [anchorElem, editor, isLinkEditMode, isLink])
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement
