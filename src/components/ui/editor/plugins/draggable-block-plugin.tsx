@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { DraggableBlockPlugin_EXPERIMENTAL } from '@lexical/react/LexicalDraggableBlockPlugin'
 import { $createParagraphNode, $getNearestNodeFromDOMNode } from 'lexical'
@@ -47,7 +46,7 @@ export function DraggableBlockPlugin({
     })
   }
 
-  return createPortal(
+  return (
     <DraggableBlockPlugin_EXPERIMENTAL
       anchorElem={anchorElem}
       menuRef={menuRef}
@@ -72,7 +71,6 @@ export function DraggableBlockPlugin({
       }
       isOnMenu={isOnMenu}
       onElementChanged={setDraggableElement}
-    />,
-    anchorElem
+    />
   )
 }

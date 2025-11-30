@@ -38,22 +38,34 @@
   position: relative;
   min-height: 100%;
   resize: none;
-  padding: 1rem;
+  padding: 1rem 1rem 1rem 2.75rem;
   font-size: 1rem;
   caret-color: var(--color-foreground);
   outline: none;
 }
 
+@media (max-width: 1025px) {
+  .editor-input {
+    padding-left: 1rem;
+  }
+}
+
 .editor-placeholder {
   pointer-events: none;
   position: absolute;
-  left: 1rem;
+  left: 2.75rem;
   top: 1rem;
   display: inline-block;
   user-select: none;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--color-muted-foreground);
+}
+
+@media (max-width: 1025px) {
+  .editor-placeholder {
+    left: 1rem;
+  }
 }
 
 /* Text highlighting */
