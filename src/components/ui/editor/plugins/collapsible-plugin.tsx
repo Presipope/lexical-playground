@@ -10,6 +10,7 @@ import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
+  $isParagraphNode,
   COMMAND_PRIORITY_LOW,
   createCommand,
   INSERT_PARAGRAPH_COMMAND,
@@ -17,6 +18,8 @@ import {
   KEY_ARROW_LEFT_COMMAND,
   KEY_ARROW_RIGHT_COMMAND,
   KEY_ARROW_UP_COMMAND,
+  KEY_BACKSPACE_COMMAND,
+  KEY_DELETE_COMMAND,
   LexicalCommand,
 } from 'lexical'
 import { useEffect } from 'react'
@@ -219,6 +222,83 @@ export function CollapsiblePlugin(): null {
             paragraph.select()
           })
           return true
+        },
+        COMMAND_PRIORITY_LOW
+      ),
+
+      // Handle DELETE key - when at end of paragraph before collapsible, go into title
+      editor.registerCommand(
+        KEY_DELETE_COMMAND,
+        () => {
+          const selection = $getSelection()
+          if ($isRangeSelection(selection) && selection.isCollapsed()) {
+            const anchorNode = selection.anchor.getNode()
+            const topLevelElement = anchorNode.getTopLevelElementOrThrow()
+
+            // Check if we're at the end of the current element
+            if (
+              selection.anchor.offset === anchorNode.getTextContentSize() ||
+              ($isParagraphNode(anchorNode) && anchorNode.isEmpty())
+            ) {
+              const nextSibling = topLevelElement.getNextSibling()
+              if ($isCollapsibleContainerNode(nextSibling)) {
+                // Move selection into the collapsible title
+                const titleNode = nextSibling.getFirstChild()
+                if ($isCollapsibleTitleNode(titleNode)) {
+                  titleNode.selectStart()
+                  return true
+                }
+              }
+            }
+          }
+          return false
+        },
+        COMMAND_PRIORITY_LOW
+      ),
+
+      // Handle BACKSPACE in title - if title is empty and at start, delete the collapsible
+      editor.registerCommand(
+        KEY_BACKSPACE_COMMAND,
+        () => {
+          const selection = $getSelection()
+          if ($isRangeSelection(selection) && selection.isCollapsed()) {
+            const anchorNode = selection.anchor.getNode()
+
+            // Check if we're at the start of a collapsible title
+            if (selection.anchor.offset === 0) {
+              const titleNode = $findMatchingParent(
+                anchorNode,
+                (node) => $isCollapsibleTitleNode(node)
+              )
+
+              if ($isCollapsibleTitleNode(titleNode)) {
+                const container = titleNode.getParent()
+                if ($isCollapsibleContainerNode(container)) {
+                  // If title is empty, check if we should delete the whole collapsible
+                  if (titleNode.getTextContentSize() === 0) {
+                    const contentNode = titleNode.getNextSibling()
+                    if ($isCollapsibleContentNode(contentNode) && contentNode.getTextContentSize() === 0) {
+                      // Both title and content are empty, delete the collapsible
+                      const prevSibling = container.getPreviousSibling()
+                      container.remove()
+                      if (prevSibling) {
+                        prevSibling.selectEnd()
+                      }
+                      return true
+                    }
+                  }
+
+                  // Move to the previous sibling
+                  const prevSibling = container.getPreviousSibling()
+                  if (prevSibling) {
+                    prevSibling.selectEnd()
+                    return true
+                  }
+                }
+              }
+            }
+          }
+          return false
         },
         COMMAND_PRIORITY_LOW
       )

@@ -109,7 +109,7 @@ function currentCellBackgroundColor(editor: LexicalEditor): null | string {
   })
 }
 
-// Color picker component for cell background
+// Color picker component for cell background using Tailwind theme colors
 function ColorPickerMenu({
   color,
   onChange,
@@ -119,12 +119,33 @@ function ColorPickerMenu({
   onChange: (color: string) => void
   onClose: () => void
 }) {
+  // Tailwind-compatible colors that work in light and dark mode
+  // Using CSS custom properties for theme compatibility
   const colors = [
-    '#ffffff', '#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da',
-    '#ffebee', '#fce4ec', '#f3e5f5', '#ede7f6', '#e8eaf6',
-    '#e3f2fd', '#e1f5fe', '#e0f7fa', '#e0f2f1', '#e8f5e9',
-    '#f1f8e9', '#f9fbe7', '#fffde7', '#fff8e1', '#fff3e0',
-    '#fbe9e7', '#efebe9', '#f5f5f5', '#eceff1', '#cfd8dc',
+    // Row 1: Neutrals
+    { value: 'hsl(var(--background))', label: 'Background' },
+    { value: 'hsl(var(--muted))', label: 'Muted' },
+    { value: 'hsl(var(--accent))', label: 'Accent' },
+    { value: 'hsl(var(--secondary))', label: 'Secondary' },
+    { value: 'hsl(var(--primary) / 0.1)', label: 'Primary Light' },
+    // Row 2: Semantic colors (light variants)
+    { value: 'hsl(0 84% 60% / 0.15)', label: 'Red Light' },
+    { value: 'hsl(25 95% 53% / 0.15)', label: 'Orange Light' },
+    { value: 'hsl(48 96% 53% / 0.15)', label: 'Yellow Light' },
+    { value: 'hsl(142 71% 45% / 0.15)', label: 'Green Light' },
+    { value: 'hsl(199 89% 48% / 0.15)', label: 'Blue Light' },
+    // Row 3: Semantic colors (medium variants)
+    { value: 'hsl(0 84% 60% / 0.25)', label: 'Red' },
+    { value: 'hsl(25 95% 53% / 0.25)', label: 'Orange' },
+    { value: 'hsl(48 96% 53% / 0.25)', label: 'Yellow' },
+    { value: 'hsl(142 71% 45% / 0.25)', label: 'Green' },
+    { value: 'hsl(199 89% 48% / 0.25)', label: 'Blue' },
+    // Row 4: Purple/Pink tones
+    { value: 'hsl(262 83% 58% / 0.15)', label: 'Purple Light' },
+    { value: 'hsl(262 83% 58% / 0.25)', label: 'Purple' },
+    { value: 'hsl(330 81% 60% / 0.15)', label: 'Pink Light' },
+    { value: 'hsl(330 81% 60% / 0.25)', label: 'Pink' },
+    { value: 'hsl(172 66% 50% / 0.25)', label: 'Teal' },
   ]
 
   return (
@@ -132,12 +153,13 @@ function ColorPickerMenu({
       <div className="grid grid-cols-5 gap-1">
         {colors.map((c) => (
           <button
-            key={c}
+            key={c.value}
             type="button"
+            title={c.label}
             className="w-6 h-6 rounded border border-border hover:scale-110 transition-transform"
-            style={{ backgroundColor: c }}
+            style={{ backgroundColor: c.value }}
             onClick={() => {
-              onChange(c)
+              onChange(c.value)
               onClose()
             }}
           />
