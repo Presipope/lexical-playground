@@ -84,16 +84,16 @@ export function ThemeColorPicker({
   }
 
   return (
-    <div className={cn('p-2', className)}>
-      <div className="grid grid-cols-5 gap-1">
+    <div className={cn('theme-color-picker', className)}>
+      <div className="theme-color-picker-grid">
         {colors.map((c) => (
           <button
             key={c.value}
             type="button"
             title={c.label}
             className={cn(
-              'w-6 h-6 rounded border border-border hover:scale-110 transition-transform',
-              color === c.value && 'ring-2 ring-ring ring-offset-1'
+              'theme-color-picker-swatch',
+              color === c.value && 'active'
             )}
             style={{ backgroundColor: c.value }}
             onClick={() => handleColorClick(c.value)}
@@ -103,7 +103,7 @@ export function ThemeColorPicker({
       {showClearButton && (
         <button
           type="button"
-          className="w-full mt-2 px-2 py-1 text-sm text-muted-foreground hover:bg-accent rounded"
+          className="theme-color-picker-clear"
           onClick={() => {
             onChange('')
             onClose?.()
