@@ -75,12 +75,13 @@ function setFloatingElemPosition(
   targetRect: DOMRect | null,
   floatingElem: HTMLElement,
   anchorElem: HTMLElement,
+  isLink: boolean,
   verticalGap: number = 10,
   horizontalOffset: number = 5,
 ): void {
   const scrollerElem = anchorElem.parentElement
 
-  if (targetRect === null || !scrollerElem) {
+  if (targetRect === null || !scrollerElem || !isLink) {
     floatingElem.style.opacity = '0'
     floatingElem.style.transform = 'translate(-10000px, -10000px)'
     return
@@ -173,7 +174,7 @@ function FloatingLinkEditor({
 
     const rootElement = editor.getRootElement()
 
-    if (selection !== null && rootElement !== null && editor.isEditable()) {
+    if (selection !== null && rootElement !== null && editor.isEditable() && isLink) {
       let domRect: DOMRect | undefined
 
       if ($isNodeSelection(selection)) {
@@ -194,12 +195,12 @@ function FloatingLinkEditor({
 
       if (domRect) {
         domRect.y += 40
-        setFloatingElemPosition(domRect, editorElem, anchorElem)
+        setFloatingElemPosition(domRect, editorElem, anchorElem, isLink)
       }
       setLastSelection(selection)
     } else if (!activeElement || activeElement.className !== 'floating-link-input') {
       if (rootElement !== null) {
-        setFloatingElemPosition(null, editorElem, anchorElem)
+        setFloatingElemPosition(null, editorElem, anchorElem, false)
       }
       setLastSelection(null)
       setIsLinkEditMode(false)
@@ -207,7 +208,7 @@ function FloatingLinkEditor({
     }
 
     return true
-  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, linkUrl])
+  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, linkUrl, isLink])
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement

@@ -819,15 +819,17 @@
 .floating-link-editor {
   position: absolute;
   z-index: 100;
-  top: -10000px;
-  left: -10000px;
+  top: 0;
+  left: 0;
   opacity: 0;
-  transition: opacity 150ms;
+  max-width: 400px;
+  width: 100%;
+  transition: opacity 0.2s ease;
   will-change: transform;
   background-color: var(--color-popover);
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
 }
 
 .floating-link-editor-inner {
