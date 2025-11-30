@@ -24,6 +24,17 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { IS_APPLE } from '../lib/environment'
+
+// Keyboard shortcuts
+const SHORTCUTS = {
+  LEFT_ALIGN: IS_APPLE ? '⌘+Shift+L' : 'Ctrl+Shift+L',
+  CENTER_ALIGN: IS_APPLE ? '⌘+Shift+E' : 'Ctrl+Shift+E',
+  RIGHT_ALIGN: IS_APPLE ? '⌘+Shift+R' : 'Ctrl+Shift+R',
+  JUSTIFY_ALIGN: IS_APPLE ? '⌘+Shift+J' : 'Ctrl+Shift+J',
+  OUTDENT: IS_APPLE ? '⌘+[' : 'Ctrl+[',
+  INDENT: IS_APPLE ? '⌘+]' : 'Ctrl+]',
+}
 
 type AlignType = 'left' | 'center' | 'right' | 'justify' | 'start' | 'end'
 
@@ -47,6 +58,15 @@ const alignTypeToIcon: Record<AlignType | 'outdent' | 'indent', typeof AlignLeft
   end: AlignRight,
   outdent: Outdent,
   indent: Indent,
+}
+
+const alignTypeToShortcut: Partial<Record<AlignType | 'outdent' | 'indent', string>> = {
+  left: SHORTCUTS.LEFT_ALIGN,
+  center: SHORTCUTS.CENTER_ALIGN,
+  right: SHORTCUTS.RIGHT_ALIGN,
+  justify: SHORTCUTS.JUSTIFY_ALIGN,
+  outdent: SHORTCUTS.OUTDENT,
+  indent: SHORTCUTS.INDENT,
 }
 
 export interface AlignDropdownProps {
@@ -184,22 +204,28 @@ export function AlignDropdown({
       </button>
 
       {isOpen && (
-        <div className="editor-dropdown-content mt-1">
+        <div className="editor-dropdown-content mt-1 min-w-[200px]">
           {alignments.map((type) => {
             const Icon = alignTypeToIcon[type]
+            const shortcut = alignTypeToShortcut[type]
             const isActive = type !== 'outdent' && type !== 'indent' && elementFormat === type
             return (
               <button
                 key={type}
                 type="button"
                 className={cn(
-                  'editor-dropdown-item w-full',
+                  'editor-dropdown-item w-full justify-between',
                   isActive && 'bg-accent'
                 )}
                 onClick={() => handleSelect(type)}
               >
-                <Icon className="h-4 w-4 mr-2" />
-                <span>{alignTypeToName[type]}</span>
+                <span className="flex items-center">
+                  <Icon className="h-4 w-4 mr-2" />
+                  <span>{alignTypeToName[type]}</span>
+                </span>
+                {shortcut && (
+                  <span className="text-xs text-muted-foreground ml-4">{shortcut}</span>
+                )}
               </button>
             )
           })}

@@ -33,6 +33,20 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { IS_APPLE } from '../lib/environment'
+
+// Keyboard shortcuts
+const SHORTCUTS = {
+  NORMAL: IS_APPLE ? '⌘+Opt+0' : 'Ctrl+Alt+0',
+  HEADING1: IS_APPLE ? '⌘+Opt+1' : 'Ctrl+Alt+1',
+  HEADING2: IS_APPLE ? '⌘+Opt+2' : 'Ctrl+Alt+2',
+  HEADING3: IS_APPLE ? '⌘+Opt+3' : 'Ctrl+Alt+3',
+  BULLET_LIST: IS_APPLE ? '⌘+Shift+8' : 'Ctrl+Shift+8',
+  NUMBERED_LIST: IS_APPLE ? '⌘+Shift+7' : 'Ctrl+Shift+7',
+  CHECK_LIST: IS_APPLE ? '⌘+Shift+9' : 'Ctrl+Shift+9',
+  QUOTE: IS_APPLE ? '⌃+Shift+Q' : 'Ctrl+Shift+Q',
+  CODE_BLOCK: IS_APPLE ? '⌘+Opt+C' : 'Ctrl+Alt+C',
+}
 
 type BlockType = 'paragraph' | 'h1' | 'h2' | 'h3' | 'bullet' | 'number' | 'check' | 'quote' | 'code'
 
@@ -58,6 +72,18 @@ const blockTypeToIcon: Record<BlockType, typeof Pilcrow> = {
   check: ListChecks,
   quote: Quote,
   code: Code,
+}
+
+const blockTypeToShortcut: Record<BlockType, string> = {
+  paragraph: SHORTCUTS.NORMAL,
+  h1: SHORTCUTS.HEADING1,
+  h2: SHORTCUTS.HEADING2,
+  h3: SHORTCUTS.HEADING3,
+  bullet: SHORTCUTS.BULLET_LIST,
+  number: SHORTCUTS.NUMBERED_LIST,
+  check: SHORTCUTS.CHECK_LIST,
+  quote: SHORTCUTS.QUOTE,
+  code: SHORTCUTS.CODE_BLOCK,
 }
 
 export interface BlockFormatDropdownProps {
@@ -272,21 +298,25 @@ export function BlockFormatDropdown({
       </button>
 
       {isOpen && (
-        <div className="editor-dropdown-content mt-1">
+        <div className="editor-dropdown-content mt-1 min-w-[200px]">
           {blockTypes.map((type) => {
             const Icon = blockTypeToIcon[type]
+            const shortcut = blockTypeToShortcut[type]
             return (
               <button
                 key={type}
                 type="button"
                 className={cn(
-                  'editor-dropdown-item w-full',
+                  'editor-dropdown-item w-full justify-between',
                   blockType === type && 'bg-accent'
                 )}
                 onClick={() => handleSelect(type)}
               >
-                <Icon className="h-4 w-4 mr-2" />
-                <span>{blockTypeToBlockName[type]}</span>
+                <span className="flex items-center">
+                  <Icon className="h-4 w-4 mr-2" />
+                  <span>{blockTypeToBlockName[type]}</span>
+                </span>
+                <span className="text-xs text-muted-foreground ml-4">{shortcut}</span>
               </button>
             )
           })}

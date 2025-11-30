@@ -76,6 +76,14 @@
       "type": "registry:ui"
     },
     {
+      "path": "ui/editor/toolbar/text-format-dropdown.tsx",
+      "type": "registry:ui"
+    },
+    {
+      "path": "ui/editor/lib/environment.ts",
+      "type": "registry:ui"
+    },
+    {
       "path": "ui/editor/plugins/floating-link-editor.tsx",
       "type": "registry:ui"
     }
