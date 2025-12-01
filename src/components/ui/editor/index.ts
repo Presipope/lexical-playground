@@ -179,3 +179,16 @@ export { editorTheme } from './lib/theme'
 // Read-only display for serialized rich text content
 export { RichTextDisplay, defaultDisplayTheme } from './rich-text-display'
 export type { RichTextDisplayProps, DisplayTheme } from './rich-text-display'
+
+// =============================================================================
+// UTILITIES
+// =============================================================================
+
+// Plain text export utilities
+export {
+  generatePlainText,
+  extractTextContent,
+  isSerializedEditorState,
+} from './utils'
+
+export type { PlainTextOptions } from './utils'
