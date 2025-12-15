@@ -13,8 +13,8 @@ import { cn } from '@/lib/utils'
 const TEXT_FORMAT = {
   BOLD: 1,
   ITALIC: 2,
-  UNDERLINE: 4,
-  STRIKETHROUGH: 8,
+  STRIKETHROUGH: 4,
+  UNDERLINE: 8,
   CODE: 16,
   SUBSCRIPT: 32,
   SUPERSCRIPT: 64,
