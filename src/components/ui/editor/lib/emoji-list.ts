@@ -555,6 +555,7 @@ const emojiList: Emoji[] = [
   { emoji: '⬅️', description: 'left arrow', category: 'Symbols', aliases: ['arrow_left'], tags: [] },
   { emoji: '⬆️', description: 'up arrow', category: 'Symbols', aliases: ['arrow_up'], tags: [] },
   { emoji: '⬇️', description: 'down arrow', category: 'Symbols', aliases: ['arrow_down'], tags: [] },
+  { emoji: '🔜', description: 'SOON arrow', category: 'Symbols', aliases: ['soon'], tags: ['arrow'] },
   { emoji: '🔄', description: 'counterclockwise arrows button', category: 'Symbols', aliases: ['arrows_counterclockwise'], tags: ['sync', 'refresh'] },
   { emoji: '➕', description: 'plus', category: 'Symbols', aliases: ['heavy_plus_sign'], tags: [] },
   { emoji: '➖', description: 'minus', category: 'Symbols', aliases: ['heavy_minus_sign'], tags: [] },
